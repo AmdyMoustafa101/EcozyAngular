@@ -1,0 +1,11 @@
+/* Style pour les badges */
+.badge {
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+}
+
+/* Style pour les boutons d'action */
+.btn-sm {
+  padding: 0.25em 0.5em;
+  font-size: 0.875em;
+}

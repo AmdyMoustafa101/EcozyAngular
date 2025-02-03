@@ -1,0 +1,107 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Créer une Nouvelle Plante</h2>
+  <form [formGroup]="planteForm" (ngSubmit)="onSubmit()">
+    <!-- Nom -->
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom de la plante</label>
+      <input
+        type="text"
+        id="nom"
+        formControlName="nom"
+        class="form-control"
+        placeholder="Entrez le nom de la plante"
+      />
+      <div *ngIf="planteForm.get('nom')?.invalid && planteForm.get('nom')?.touched" class="text-danger">
+        <small *ngIf="planteForm.get('nom')?.errors?.['required']">Le nom est obligatoire.</small>
+        <small *ngIf="planteForm.get('nom')?.errors?.['minlength']">Le nom doit contenir au moins 2 caractères.</small>
+      </div>
+    </div>
+
+    <!-- Besoin en eau -->
+    <div class="mb-3">
+      <label for="besoinEau" class="form-label">Besoin en eau (en litres)</label>
+      <input
+        type="number"
+        id="besoinEau"
+        formControlName="besoinEau"
+        class="form-control"
+        placeholder="Entrez le besoin en eau"
+      />
+      <div *ngIf="planteForm.get('besoinEau')?.invalid && planteForm.get('besoinEau')?.touched" class="text-danger">
+        <small *ngIf="planteForm.get('besoinEau')?.errors?.['required']">Le besoin en eau est obligatoire.</small>
+        <small *ngIf="planteForm.get('besoinEau')?.errors?.['min']">Le besoin en eau doit être positif.</small>
+      </div>
+    </div>
+
+    <!-- Type d'arrosage -->
+    <div class="mb-3">
+      <label for="typeArrosage" class="form-label">Type d'arrosage</label>
+      <select
+        id="typeArrosage"
+        formControlName="typeArrosage"
+        class="form-select"
+      >
+        <option value="">Sélectionnez un type d'arrosage</option>
+        <option *ngFor="let type of typeArrosageOptions" [value]="type">{{ type }}</option>
+      </select>
+      <div *ngIf="planteForm.get('typeArrosage')?.invalid && planteForm.get('typeArrosage')?.touched" class="text-danger">
+        <small *ngIf="planteForm.get('typeArrosage')?.errors?.['required']">Le type d'arrosage est obligatoire.</small>
+      </div>
+    </div>
+
+    <!-- Humidité (si typeArrosage est 'humidité') -->
+    <div class="mb-3" *ngIf="planteForm.get('typeArrosage')?.value === 'humidité'">
+      <label for="humidite" class="form-label">Humidité (en %)</label>
+      <input
+        type="number"
+        id="humidite"
+        formControlName="humidite"
+        class="form-control"
+        placeholder="Entrez l'humidité"
+      />
+      <div *ngIf="planteForm.get('humidite')?.invalid && planteForm.get('humidite')?.touched" class="text-danger">
+        <small *ngIf="planteForm.get('humidite')?.errors?.['required']">L'humidité est obligatoire.</small>
+        <small *ngIf="planteForm.get('humidite')?.errors?.['min']">L'humidité doit être positive.</small>
+        <small *ngIf="planteForm.get('humidite')?.errors?.['max']">L'humidité ne peut pas dépasser 100%.</small>
+      </div>
+    </div>
+
+    <!-- Période et heures d'arrosage (si typeArrosage est 'période') -->
+    <div *ngIf="planteForm.get('typeArrosage')?.value === 'période'">
+      <!-- Période -->
+      <div class="mb-3">
+        <label for="periode" class="form-label">Période (nombre d'arrosages par jour)</label>
+        <input
+          type="number"
+          id="periode"
+          formControlName="periode"
+          class="form-control"
+          placeholder="Entrez la période"
+        />
+        <div *ngIf="planteForm.get('periode')?.invalid && planteForm.get('periode')?.touched" class="text-danger">
+          <small *ngIf="planteForm.get('periode')?.errors?.['required']">La période est obligatoire.</small>
+          <small *ngIf="planteForm.get('periode')?.errors?.['min']">La période doit être d'au moins 1.</small>
+        </div>
+      </div>
+
+      <!-- Heures d'arrosage -->
+      <div class="mb-3" *ngFor="let control of heuresArrosageControls; let i = index">
+        <label [for]="'heure' + i" class="form-label">Heure d'arrosage {{ i + 1 }}</label>
+        <input
+          type="time"
+          [id]="'heure' + i"
+          [formControl]="control"
+          class="form-control"
+        />
+        <div *ngIf="control.invalid && control.touched" class="text-danger">
+          <small>L'heure est obligatoire.</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bouton de soumission -->
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary" [disabled]="planteForm.invalid">Créer la Plante</button>
+    </div>
+  </form>
+</div>
