@@ -1,0 +1,49 @@
+<div class="dashboard">
+  <div class="header">
+    <h1>Dashboard</h1>
+    <div class="actions">
+      <button class="btn-primary">Arroser Maintenant</button>
+      <button class="btn-secondary" (click)="openArrosageModal()">
+        Programmer un arrosage
+      </button>
+    </div>
+  </div>
+
+  <!-- Autres éléments du dashboard -->
+
+  <app-arrosage-modal
+    #arrosageModal
+    (close)="onModalClose()"
+  ></app-arrosage-modal>
+
+  <div class="gauges">
+    <app-circular-gauge
+      [value]="70"
+      title="Humidité"
+      color="#4CAF50"
+    ></app-circular-gauge>
+    <app-circular-gauge
+      [value]="40"
+      title="Luminosité"
+      color="#FFC107"
+    ></app-circular-gauge>
+    <app-circular-gauge
+      [value]="85"
+      title="Niveau d'eau"
+      color="#2196F3"
+    ></app-circular-gauge>
+  </div>
+
+  <div class="week-navigation">
+    <button (click)="changeWeek(-1)">‹ Semaine précédente</button>
+    <span>
+      Semaine du {{ weekDates[0].date | date : "dd/MM/yyyy" }} au
+      {{ weekDates[6].date | date : "dd/MM/yyyy" }}
+    </span>
+    <button (click)="changeWeek(1)">Semaine suivante ›</button>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="gauge-container">
+  <div class="gauge-wrapper">
+    <svg width="120" height="120">
+      <circle
+        cx="60"
+        cy="60"
+        r="54"
+        stroke="#eee"
+        stroke-width="12"
+        fill="none"
+      />
+      <circle
+        cx="60"
+        cy="60"
+        r="54"
+        [attr.stroke]="color"
+        stroke-width="12"
+        [attr.stroke-dasharray]="value * 3.4"
+        stroke-linecap="round"
+        transform="rotate(-90 60 60)"
+        fill="none"
+      />
+      <text x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24">
+        {{ value }}%
+      </text>
+    </svg>
+  </div>
+  <p class="gauge-title">
+    <fa-icon [icon]="getIcon()" [style.color]="color"></fa-icon> {{ title }}
+  </p>
+</div>

@@ -57,3 +57,9 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+Voici la listes des dépendance que j'ai installer :
+
+- npm install chart.js date-fns
+- npm install @fortawesome/angular-fontawesome @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons
+- npm install @fortawesome/fontawesome-free

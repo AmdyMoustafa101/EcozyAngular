@@ -1,0 +1,77 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #00796b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.week-navigation button {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.gauges {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.chart-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  height: 400px;
+}
+@media (max-width: 768px) {
+  .gauges {
+    flex-direction: column;
+  }
+
+  .week-navigation {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

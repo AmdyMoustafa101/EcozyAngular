@@ -1,0 +1,69 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 600px; /* Augmentation de la largeur */
+}
+
+.modal h2 {
+  text-align: center;
+  font-size: 24px; /* Taille de police augmentée */
+  margin-bottom: 20px;
+}
+
+.modal hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px; /* Espacement augmenté */
+}
+
+.form-group label {
+  display: block;
+  font-size: 16px; /* Taille de police augmentée */
+  margin-bottom: 10px; /* Espacement augmenté */
+}
+
+.form-group input {
+  width: 96%;
+  padding: 12px; /* Padding augmenté */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px; /* Taille de police augmentée */
+}
+
+.form-group button {
+  width: 48%;
+  padding: 12px; /* Padding augmenté */
+  background-color: #008000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px; /* Taille de police augmentée */
+  cursor: pointer;
+}
+
+.form-group button[type="button"] {
+  background-color: #ccc;
+  margin-left: 4%;
+}
+
+.form-group button:hover {
+  background-color: #006400;
+}
