@@ -1,7 +1,7 @@
 <div class="container">
   <div class="card">
     <div>
-      <img src="public/images/logo.png" alt="Logo ECOZY" class="logo" />
+      <img src="images/logo.png" alt="Logo ECOZY" class="logo" />
     </div>
 
     <p class="description">
@@ -12,21 +12,20 @@
     <div class="input">
       <div class="code-input">
         <input
-          *ngFor="let box of codeBoxes; let i = index"
           class="input-box"
-          type="number"
-          maxlength="1"
-          [(ngModel)]="codeBoxes[i]"
-          (input)="onInput($event, i)"
-          (keydown)="onBackspace($event, i)"
+          *ngFor="let char of maskedCode; let i = index; trackBy: trackByIndex"
+          #codeInput
           type="text"
           maxlength="1"
-          [value]="maskedCode[i]" 
-          [ngClass]="{'valid': code[i] !== '', 'invalid': code[i] === ''}"
-          tabindex="-1"
+          (input)="onCodeInput($event, i)"
+          (keydown)="handleKeydown($event, i)"
+          [value]="char"
         />
+        <div *ngIf="errorMessage" style="color: rgb(253, 7, 7);">
+          - {{ errorMessage }}
+        </div>
       </div>
-      <img src="/public/images/logo-projet.png" alt="image" class="image" />
+      <img src="images/logo-projet.png" alt="image" class="image" />
     </div>
 
     <p class="rfid">- Scanner votre carte RFID</p>

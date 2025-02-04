@@ -1,77 +1,92 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
+import { Component, QueryList, ViewChildren, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthServiceService } from '../services/auth-service.service';
 
 @Component({
   selector: 'app-authentification',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule],
   templateUrl: './authentification.component.html',
-  styleUrl: './authentification.component.css'
+  styleUrls: ['./authentification.component.css'],
 })
 export class AuthentificationComponent {
-  codeBoxes: string[] = ['', '', '', '']; // Tableau pour stocker les valeurs des inputs
-  errorMessage: string | null = null; // Message d'erreur
-  code: string[] = ['', '', '', '']; // Code réel
-  maskedCode: string[] = ['', '', '', '']; // Masque des champs (points noirs)
+  code: string[] = ['', '', '', '']; // Tableau pour stocker les valeurs des inputs
+  maskedCode: string[] = ['', '', '', '']; // Tableau pour masquer les valeurs saisies
+  errorMessage: string = '';
+  
+  @ViewChildren('codeInput') codeInputs!: QueryList<ElementRef>; // Référence aux inputs HTML
 
-  constructor() {}
 
-  /*onInit(): void {
-     // Écoute des données reçues
-     this.socketSubscription = this.codeService.getMessages().subscribe((message) => {
-      if (message.type === 'keypad') {
-        const char = message.value;
-        //console.log(message.value);
-        this.showModal = true;
-        this.addCharacterToCode(char);
-      }
-    });
-  }*/
+  constructor(private router: Router, private authService: AuthServiceService) {}
 
-  // Fonction appelée à chaque saisie dans un champ
-  onInput(event: Event, index: number): void {
+  // Fonction trackBy pour différencier chaque input par son index
+  trackByIndex(index: number, item: any): number {
+    return index;
+  }
+
+  onCodeInput(event: Event, index: number): void {
     const input = event.target as HTMLInputElement;
-    const value = input.value;
+    let value = input.value;
 
-    // Limite la saisie à un seul chiffre
-    if (value.length > 1) {
-      input.value = value.slice(0, 1);
-      this.codeBoxes[index] = value.slice(0, 1);
+    // Vérifier si l'entrée est un nombre
+    if (!/^\d*$/.test(value)) {
+      input.value = '';
+      return;
     }
 
-    // Passe au champ suivant si un chiffre est saisi
-    if (value.length === 1 && index < this.codeBoxes.length - 1) {
-      const nextInput = document.querySelector(
-        `.code-input input:nth-child(${index + 2})`
-      ) as HTMLInputElement;
-      if (nextInput) {
-        nextInput.focus();
+    if (value.length > 1) {
+      value = value.slice(-1);
+    }
+  
+    this.code[index] = value;
+    this.maskedCode[index] = value;
+  
+    if (value) {
+      setTimeout(() => {
+        this.maskedCode[index] = '•';
+        input.value = '•';
+      }, 500);
+  
+      // Déplacer le focus de manière asynchrone
+      if (index < this.code.length - 1) {
+        setTimeout(() => {
+          const nextInput = this.codeInputs.toArray()[index + 1];
+          nextInput.nativeElement.focus();
+        });
       }
     }
-  }
-
-  // Fonction pour gérer la suppression avec la touche Backspace
-  onBackspace(event: KeyboardEvent , index: number): void {
-  if (event.key === 'Backspace' && index > 0 && !this.codeBoxes[index]) {
-    const prevInput = document.querySelector(
-      `.code-input input:nth-child(${index})`
-    ) as HTMLInputElement;
-    if (prevInput) {
-      prevInput.focus();
-    }
-  }
-}
-
-  // Fonction pour valider le code (optionnelle)
-  validateCode(): void {
-    const code = this.codeBoxes.join('');
-    if (code.length === 4) {
-      console.log('Code saisi :', code);
-      // Ajoutez ici la logique de validation du code
-    } else {
-      this.errorMessage = 'Code incomplet';
+  
+    if (this.code.every((digit) => digit !== '')) {
+      this.verifyCode();
     }
   }
 
+  
+
+  handleKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Backspace' && index > 0 && !this.code[index]) {
+      const prevInput = this.codeInputs.toArray()[index - 1];
+      prevInput?.nativeElement.focus();
+    }
+  }
+
+  verifyCode(): void {
+    const enteredCode = this.code.join('');
+    console.log('Code complet saisi :', enteredCode);
+
+    // Ajoutez ici votre logique pour vérifier le code
+    this.authService.login(enteredCode).subscribe(
+      (response: any) => {
+        if (response.message) {
+          this.router.navigate(['/users']);
+        } else {
+          console.error('Code verification failed', response);
+          this.errorMessage = 'Code Incorrect';
+        }
+      },
+      (error) => {
+        console.error('API error:', error);
+      }
+    );
+  }
 }
