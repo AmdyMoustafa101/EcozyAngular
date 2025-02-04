@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
-import { FormBuilder,FormControl, FormsModule, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -9,7 +16,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.css'
+  styleUrl: './add-user.component.css',
 })
 export class AddUserComponent {
   userForm: FormGroup;
@@ -39,12 +46,35 @@ export class AddUserComponent {
     });
   }
 
-  // Gérer la sélection du fichier
+  isModalOpen = false;
+  photoPreview: string | ArrayBuffer | null = null;
+
+  // ... le reste du code existant ...
+
+  // Ajoutez ces méthodes
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+    this.userForm.reset();
+    this.selectedFile = null;
+    this.photoPreview = null;
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
       this.userForm.patchValue({ photo: file });
+
+      // Aperçu de l'image
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.photoPreview = reader.result;
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -68,7 +98,7 @@ export class AddUserComponent {
             title: 'Succès!',
             text: `Utilisateur créé avec succès. Code secret: ${codeSecret}`,
             icon: 'success',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
           });
           this.userForm.reset();
           this.selectedFile = null; // Réinitialiser le fichier sélectionné
@@ -78,9 +108,9 @@ export class AddUserComponent {
             title: 'Erreur!',
             text: 'Erreur lors de la création de l’utilisateur',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
           });
-        }
+        },
       });
     }
   }
@@ -88,7 +118,9 @@ export class AddUserComponent {
   getControl(controlName: string): FormControl {
     const control = this.userForm.get(controlName);
     if (!control) {
-      throw new Error(`Control with name '${controlName}' does not exist in the form group`);
+      throw new Error(
+        `Control with name '${controlName}' does not exist in the form group`
+      );
     }
     return control as FormControl;
   }
