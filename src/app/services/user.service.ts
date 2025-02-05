@@ -16,12 +16,13 @@ interface User {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private apiUrl = 'http://localhost:3500/api/users';
+  private assignRfidUrl = 'http://localhost:3500/api/assign-rfid';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   // Créer un utilisateur
   createUser(formData: FormData): Observable<any> {
@@ -35,15 +36,25 @@ export class UserService {
 
   // Archiver un utilisateur
   archiveUser(userId: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${userId}/archive`, { archived: true });
+    return this.http.patch<any>(`${this.apiUrl}/${userId}/archive`, {
+      archived: true,
+    });
   }
 
   // Désarchiver un utilisateur
   unarchiveUser(userId: string): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${userId}/archive`, { archived: false });
+    return this.http.patch<any>(`${this.apiUrl}/${userId}/archive`, {
+      archived: false,
+    });
   }
 
+  // Mettre à jour un utilisateur
   updateUser(userId: string, formData: FormData): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${userId}`, formData);
+  }
+
+  // Associer une carte RFID à un utilisateur
+  assignRfidToUser(userId: string, carteRFID: string): Observable<any> {
+    return this.http.post(this.assignRfidUrl, { userId, carteRFID });
   }
 }

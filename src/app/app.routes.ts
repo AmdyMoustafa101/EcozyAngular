@@ -16,7 +16,6 @@ export const routes: Routes = [
       { path: 'plantes', component: PlanteListComponent },
       { path: 'new-plante', component: CreatePlanteComponent },
       { path: 'historique', component: HistoriqueComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
   {

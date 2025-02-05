@@ -3,14 +3,13 @@
   <img class="logo" alt="Ecozy Logo" src="image.png" />
 
   <!-- Photo de profil et nom de l'utilisateur -->
-  <div class="user-info">
+  <div class="user-info" *ngIf="user">
     <img
       class="profile-picture"
       alt="User profile picture"
-      src="https://storage.googleapis.com/a1aa/image/G-j-twPapM6UGl5xgiQKA1FmyiyKuQYaeAiRkcro-v8.jpg"
+      [src]="'http://localhost:3500/' + user.photo"
     />
-    <p class="username">Nom de l'utilisateur</p>
-    <!-- Remplacez par une variable dynamique plus tard -->
+    <p class="username">{{ user.nom }} {{ user.prenom }}</p>
   </div>
 
   <!-- Menu -->
@@ -30,7 +29,7 @@
   </div>
 
   <!-- Bouton de déconnexion -->
-  <a class="logout" href="#">
+  <a class="logout" (click)="logout()">
     <i class="fas fa-sign-out-alt"></i>
     DECONNEXION
   </a>

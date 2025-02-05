@@ -21,7 +21,8 @@ import { AssignationComponent } from '../assignation/assignation.component';
     FormsModule,
     ReactiveFormsModule,
     AddUserComponent,
-    EditUserComponent,AssignationComponent
+    EditUserComponent,
+    AssignationComponent,
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css'],
@@ -42,7 +43,11 @@ export class UserListComponent implements OnInit {
   showEditModal: boolean = false;
   selectedUser: any = null;
   showAssignationModal = false;
-  selectedUserForAssignation: { nom: string; prenom: string } | null = null;
+  selectedUserForAssignation: {
+    _id: string;
+    nom: string;
+    prenom: string;
+  } | null = null;
 
   @ViewChild('addUserModal') addUserModal!: AddUserComponent;
   @ViewChild('editUserModal') editUserModal!: EditUserComponent;
@@ -54,7 +59,7 @@ export class UserListComponent implements OnInit {
     this.loadUsers();
   }
 
-  openAssignationModal(user: { nom: string; prenom: string }) {
+  openAssignationModal(user: { _id: string; nom: string; prenom: string }) {
     this.selectedUserForAssignation = user;
     this.showAssignationModal = true;
   }
