@@ -139,7 +139,10 @@
             user.carteRFID
           }}</span>
           <ng-template #assignButton>
-            <button class="btn btn-sm btn-outline-primary">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="openAssignationModal(user)"
+            >
               <i class="fas fa-id-card"></i> Assigner
             </button>
           </ng-template>
@@ -226,6 +229,12 @@
     (closeModal)="closeEditModal()"
     (userUpdated)="onUserUpdated($event)"
   ></app-edit-user>
+
+  <app-assignation
+    *ngIf="showAssignationModal"
+    [user]="selectedUserForAssignation"
+    (closeModal)="closeAssignationModal()"
+  ></app-assignation>
 
   <div *ngIf="selectedUserDetails" class="modal-backdrop fade show"></div>
   <div

@@ -11,6 +11,7 @@ import {
 import Swal from 'sweetalert2';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
+import { AssignationComponent } from '../assignation/assignation.component';
 
 @Component({
   selector: 'app-user-list',
@@ -20,7 +21,7 @@ import { EditUserComponent } from '../edit-user/edit-user.component';
     FormsModule,
     ReactiveFormsModule,
     AddUserComponent,
-    EditUserComponent,
+    EditUserComponent,AssignationComponent
   ],
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css'],
@@ -40,9 +41,12 @@ export class UserListComponent implements OnInit {
   usersWithRFID: number = 0;
   showEditModal: boolean = false;
   selectedUser: any = null;
+  showAssignationModal = false;
+  selectedUserForAssignation: { nom: string; prenom: string } | null = null;
 
   @ViewChild('addUserModal') addUserModal!: AddUserComponent;
   @ViewChild('editUserModal') editUserModal!: EditUserComponent;
+  @ViewChild('assignationModal') assignationModal!: AssignationComponent;
 
   constructor(private userService: UserService, private fb: FormBuilder) {}
 
@@ -50,6 +54,15 @@ export class UserListComponent implements OnInit {
     this.loadUsers();
   }
 
+  openAssignationModal(user: { nom: string; prenom: string }) {
+    this.selectedUserForAssignation = user;
+    this.showAssignationModal = true;
+  }
+
+  closeAssignationModal() {
+    this.showAssignationModal = false;
+    this.selectedUserForAssignation = null;
+  }
   openAddUserModal() {
     this.addUserModal.openModal();
   }
