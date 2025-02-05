@@ -1,0 +1,169 @@
+/* Header stats styles */
+.header-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stat {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  color: #10b981;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #10b981;
+}
+
+.stat-label {
+  color: #4b5563;
+  margin-top: 0.5rem;
+}
+
+.divider {
+  width: 1px;
+  height: 4rem;
+  background-color: #e5e7eb;
+}
+
+/* Container styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  border-radius: 0.5rem;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #10b981;
+}
+
+/* Filters styles */
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-input,
+.filter-select {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+}
+
+/* Table styles */
+.event-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+  background-color: #f0fdf4;
+  border-radius: 0.5rem;
+}
+
+.table-cell {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.table-row {
+  transition: all 0.3s ease;
+}
+
+.table-row:hover {
+  background-color: #f0fdf4;
+  transform: scale(1.01);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge styles */
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.badge-programme {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.badge-immediat {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.badge-termine {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.badge-encours {
+  background-color: #fef9c3;
+  color: #d97706;
+}
+
+.badge-enattente {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Button styles */
+.details-button {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #48bb78;
+  border-radius: 0.5rem;
+  background-color: #d1fae5;
+  color: #10b981;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.details-button:hover {
+  background-color: #a3e6bf;
+}

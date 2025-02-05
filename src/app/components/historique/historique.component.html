@@ -1,1 +1,101 @@
-<p>historique works!</p>
+<div class="container">
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <div class="stat-value">{{ totalEvenements }}</div>
+      </div>
+      <div class="stat-label">Total Événements</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="stat-value">{{ evenementsImmediat }}</div>
+      </div>
+      <div class="stat-label">Arrosages Immédiats</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-value">{{ evenementsProgrammes }}</div>
+      </div>
+      <div class="stat-label">Arrosages Programmés</div>
+    </div>
+  </div>
+
+  <div class="header">
+    <h2 class="title">Historique d'Arrosage</h2>
+  </div>
+
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Rechercher..."
+      class="filter-input"
+      (input)="filtrerEvenements($event)"
+    />
+    <select class="filter-select" (change)="filtrerParType($event)">
+      <option value="">Tous les Types</option>
+      <option value="Immediat">Immédiat</option>
+      <option value="Programme">Programmé</option>
+    </select>
+  </div>
+
+  <table class="event-table">
+    <thead>
+      <tr class="table-header">
+        <th class="table-cell">Plante</th>
+        <th class="table-cell">Type</th>
+        <th class="table-cell">Date</th>
+        <th class="table-cell">Utilisateur</th>
+        <th class="table-cell">Statut</th>
+        <th class="table-cell">Détails</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of evenementsFiltres" class="table-row">
+        <td class="table-cell">{{ event.nomPlante }}</td>
+        <td class="table-cell">
+          <span
+            class="badge"
+            [ngClass]="{
+              'badge-programme': event.typeArrosage === 'Programme',
+              'badge-immediat': event.typeArrosage === 'Immediat'
+            }"
+          >
+            {{ event.typeArrosage }}
+          </span>
+        </td>
+        <td class="table-cell">
+          {{ event.horodatage | date : "medium" }}
+        </td>
+        <td class="table-cell">{{ event.user }}</td>
+        <td class="table-cell">
+          <span
+            class="badge"
+            [ngClass]="{
+              'badge-termine': event.statut === 'Termine',
+              'badge-encours': event.statut === 'EnCours',
+              'badge-enattente': event.statut === 'EnAttente'
+            }"
+          >
+            {{ event.statut }}
+          </span>
+        </td>
+        <td class="table-cell">
+          <button class="details-button" (click)="afficherDetails(event)">
+            Détails
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

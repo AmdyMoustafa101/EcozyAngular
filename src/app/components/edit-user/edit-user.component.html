@@ -1,126 +1,97 @@
-<div class="modal-overlay">
-  <div class="container">
-    <h2>Modifier l'Utilisateur</h2>
-    <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
-      <!-- Prénom -->
-      <div class="form-group">
-        <label for="editPrenom">
-          Prénom
-          <span>*</span>
-        </label>
-        <input
-          id="editPrenom"
-          type="text"
-          placeholder="Entrer le prénom"
-          formControlName="prenom"
-        />
-        <div
-          *ngIf="
-            editUserForm.get('prenom')?.invalid &&
-            editUserForm.get('prenom')?.touched
-          "
-          class="error-text"
-        >
-          <small *ngIf="editUserForm.get('prenom')?.errors?.['required']"
-            >Le prénom est obligatoire.</small
-          >
-          <small *ngIf="editUserForm.get('prenom')?.errors?.['pattern']">
-            Doit commencer par une majuscule et ne contenir que des lettres.
-          </small>
-        </div>
-      </div>
-
-      <!-- Nom -->
-      <div class="form-group">
-        <label for="editNom">
-          Nom
-          <span>*</span>
-        </label>
-        <input
-          id="editNom"
-          type="text"
-          placeholder="Entrer le nom"
-          formControlName="nom"
-        />
-        <div
-          *ngIf="
-            editUserForm.get('nom')?.invalid && editUserForm.get('nom')?.touched
-          "
-          class="error-text"
-        >
-          <small *ngIf="editUserForm.get('nom')?.errors?.['required']"
-            >Le nom est obligatoire.</small
-          >
-          <small *ngIf="editUserForm.get('nom')?.errors?.['pattern']">
-            Doit commencer par une majuscule et ne contenir que des lettres.
-          </small>
-        </div>
-      </div>
-
-      <!-- Téléphone -->
-      <div class="form-group">
-        <label for="editTelephone">
-          Téléphone
-          <span>*</span>
-        </label>
-        <input
-          id="editTelephone"
-          type="number"
-          placeholder="Entrer le téléphone"
-          formControlName="telephone"
-        />
-        <div
-          *ngIf="
-            editUserForm.get('telephone')?.invalid &&
-            editUserForm.get('telephone')?.touched
-          "
-          class="error-text"
-        >
-          <small *ngIf="editUserForm.get('telephone')?.errors?.['required']"
-            >Le téléphone est obligatoire.</small
-          >
-        </div>
-      </div>
-
-      <!-- Photo -->
-      <div class="form-group">
-        <label for="editPhoto">Photo</label>
-        <div class="photo-input">
-          <img
-            [src]="photoPreview || 'https://via.placeholder.com/100'"
-            alt="Aperçu de la photo"
-            width="100"
-            height="100"
+<div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="container">
+      <h2>Modifier l'Utilisateur</h2>
+      <form [formGroup]="editUserForm" (ngSubmit)="onSubmitEditForm()" enctype="multipart/form-data">
+        <!-- Prénom -->
+        <div class="form-group">
+          <label for="prenom">
+            Prénom
+            <span>*</span>
+          </label>
+          <input
+            id="prenom"
+            type="text"
+            placeholder="Entrer le prénom"
+            [formControl]="getControl('prenom')"
           />
-          <input type="file" id="editPhoto" (change)="onFileSelected($event)" />
+          <div *ngIf="getControl('prenom')?.invalid && getControl('prenom')?.touched" class="error-text">
+            <small *ngIf="getControl('prenom')?.errors?.['required']">Le prénom est obligatoire.</small>
+            <small *ngIf="getControl('prenom')?.errors?.['pattern']">Doit commencer par une majuscule et ne contenir que des lettres.</small>
+          </div>
         </div>
-      </div>
-
-      <!-- Rôle -->
-      <div class="form-group">
-        <label for="editRole">Rôle</label>
-        <div class="relative">
-          <select class="custom-select" id="editRole" formControlName="role">
-            <option value="user">Utilisateur</option>
-            <option value="admin">Administrateur</option>
-          </select>
-          <div class="select-icon"></div>
+  
+        <!-- Nom -->
+        <div class="form-group">
+          <label for="nom">
+            Nom
+            <span>*</span>
+          </label>
+          <input
+            id="nom"
+            type="text"
+            placeholder="Entrer le nom"
+            [formControl]="getControl('nom')"
+          />
+          <div *ngIf="getControl('nom')?.invalid && getControl('nom')?.touched" class="error-text">
+            <small *ngIf="getControl('nom')?.errors?.['required']">Le nom est obligatoire.</small>
+            <small *ngIf="getControl('nom')?.errors?.['pattern']">Doit commencer par une majuscule et ne contenir que des lettres.</small>
+          </div>
         </div>
-      </div>
-
-      <!-- Boutons -->
-      <div class="form-group">
-        <button type="button" class="cancel-btn" (click)="close()">
-          Annuler
-        </button>
-        <button
-          type="submit"
-          class="submit-btn"
-          [disabled]="editUserForm.invalid"
-        >
-          Enregistrer
-        </button>
-      </div>
-    </form>
+  
+        <!-- Téléphone -->
+        <div class="form-group">
+          <label for="telephone">
+            Téléphone
+            <span>*</span>
+          </label>
+          <input
+            id="telephone"
+            type="number"
+            placeholder="Entrer le téléphone"
+            [formControl]="getControl('telephone')"
+          />
+          <div *ngIf="getControl('telephone')?.invalid && getControl('telephone')?.touched" class="error-text">
+            <small *ngIf="getControl('telephone')?.errors?.['required']">Le téléphone est obligatoire.</small>
+            <small *ngIf="getControl('telephone')?.errors?.['pattern']">Numéro invalide (9 chiffres requis).</small>
+          </div>
+        </div>
+  
+        <!-- Photo -->
+        <div class="form-group">
+          <label for="photo">Photo</label>
+          <div class="photo-input">
+            <img
+              [src]="photoPreview || 'https://via.placeholder.com/100'"
+              alt="Aperçu de la photo"
+              width="100"
+              height="100"
+            />
+            <input type="file" id="photo" (change)="onFileSelected($event)" />
+          </div>
+        </div>
+  
+        <!-- Rôle -->
+        <div class="form-group">
+          <label for="role">Rôle</label>
+          <div class="relative">
+            <select class="custom-select" id="role" [formControl]="getControl('role')">
+              <option value="user">Utilisateur</option>
+              <option value="admin">Administrateur</option>
+            </select>
+            <div class="select-icon"></div>
+          </div>
+        </div>
+  
+        <!-- Boutons -->
+        <div class="form-group">
+          <button type="button" class="cancel-btn" (click)="closeEditModal()">
+            Annuler
+          </button>
+          <button type="submit" class="submit-btn" [disabled]="editUserForm.invalid">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+  

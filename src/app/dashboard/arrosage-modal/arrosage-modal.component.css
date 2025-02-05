@@ -10,7 +10,7 @@
   align-items: center;
 }
 
-.modal {
+.container {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -41,7 +41,7 @@
 }
 
 .form-group input {
-  width: 96%;
+  width: 100%;
   padding: 12px; /* Padding augmenté */
   border: 1px solid #ccc;
   border-radius: 5px;

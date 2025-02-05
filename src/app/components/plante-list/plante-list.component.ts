@@ -1,180 +1,145 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PlanteService } from '../../services/plante.service';
-import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup,FormControl,FormArray, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';@Component({
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import Swal from 'sweetalert2';
+import { CreatePlanteComponent } from '../create-plante/create-plante.component';
+import { EditPlanteComponent } from '../edit-plante/edit-plante.component';
+
+@Component({
   selector: 'app-plante-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CreatePlanteComponent,
+    EditPlanteComponent,
+  ],
   templateUrl: './plante-list.component.html',
-  styleUrl: './plante-list.component.css'
+  styleUrls: ['./plante-list.component.css'],
 })
 export class PlanteListComponent implements OnInit {
-  plantes: any[] = []; // Liste complète des plantes
-  filteredPlantes: any[] = []; // Liste filtrée des plantes
-  currentPage: number = 1; // Page actuelle
-  itemsPerPage: number = 5; // Nombre d'éléments par page
-  searchQuery: string = ''; // Terme de recherche
-  filterType: string = 'all'; // Filtre par type d'arrosage
-  heuresSelectionnees: string[] = []; // Pour stocker les heures sélectionnées
+  plantes: any[] = [];
+  filteredPlantes: any[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  searchQuery: string = '';
+  filterType: string = 'all';
+  selectedPlante: any = null;
+  showEditModal: boolean = false;
+  showCreatePlanteModal: boolean = false;
 
-  // Variables pour le modal de modification
-  showEditModal: boolean = false; // Afficher ou masquer le modal
-  selectedPlante: any = null; // Plante sélectionnée pour modification
-  editPlanteForm: FormGroup; // Formulaire de modification
+  totalPlantes: number = 0;
+  plantesHumidite: number = 0;
+  plantesPeriode: number = 0;
 
-  constructor(private planteService: PlanteService, private fb: FormBuilder) {
-    // Initialiser le formulaire de modification
-    this.editPlanteForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      besoinEau: ['', [Validators.required, Validators.min(0)]],
-      typeArrosage: ['', Validators.required],
-      humidite: [null],
-      periode: [null],
-      heuresArrosage: this.fb.array([]), // Utiliser un FormArray pour les heures
-    });
+  @ViewChild('createPlanteModal') createPlanteModal!: CreatePlanteComponent;
+  @ViewChild('editPlanteModal') editPlanteModal!: EditPlanteComponent;
 
-    // Gérer les changements de période
-    this.editPlanteForm.get('periode')?.valueChanges.subscribe((value) => {
-      this.genererChampsHeures(value);
-    });
-  }
+  constructor(private planteService: PlanteService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.loadPlantes();
   }
 
+  openCreatePlanteModal() {
+    this.showCreatePlanteModal = true;
+  }
 
-  // Charger la liste des plantes
+  closeCreatePlanteModal() {
+    this.showCreatePlanteModal = false;
+  }
+
+  openEditModal(plante: any): void {
+    this.selectedPlante = plante;
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.selectedPlante = null;
+  }
+
+  onPlanteCreated(newPlante: any): void {
+    this.plantes.push(newPlante);
+    this.applyFilters();
+    this.closeCreatePlanteModal();
+  }
+
+  onPlanteUpdated(updatedPlante: any): void {
+    this.plantes = this.plantes.map((plante) =>
+      plante._id === updatedPlante._id ? updatedPlante : plante
+    );
+    this.applyFilters();
+    this.closeEditModal();
+  }
+
   loadPlantes(): void {
     this.planteService.getPlantes().subscribe({
       next: (data) => {
         this.plantes = data;
-        this.applyFilters(); // Appliquer les filtres après le chargement
+        this.applyFilters();
       },
       error: (err) => {
-        Swal.fire('Erreur', 'Impossible de charger la liste des plantes.', 'error');
+        console.error('Erreur lors de la récupération des plantes', err);
       },
     });
   }
 
-  // Appliquer les filtres (recherche et filtre par type)
   applyFilters(): void {
     this.filteredPlantes = this.plantes.filter((plante) => {
-      // Filtre de recherche par nom
-      const matchesSearch = plante.nom.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-      // Filtre par type d'arrosage
-      const matchesFilter =
-        this.filterType === 'all' ||
-        (this.filterType === 'humidité' && plante.typeArrosage === 'humidité') ||
-        (this.filterType === 'période' && plante.typeArrosage === 'période');
-
-      return matchesSearch && matchesFilter;
+      const matchesSearch = plante.nom
+        .toLowerCase()
+        .includes(this.searchQuery.toLowerCase());
+      const matchesFilterType =
+        this.filterType === 'all' || plante.typeArrosage === this.filterType;
+      return matchesSearch && matchesFilterType;
     });
-
-    this.currentPage = 1; // Réinitialiser la pagination après l'application des filtres
+    this.updateStatistics();
+    this.currentPage = 1;
   }
 
-  // Pagination : obtenir les plantes pour la page actuelle
+  updateStatistics(): void {
+    this.totalPlantes = this.filteredPlantes.length;
+    this.plantesHumidite = this.filteredPlantes.filter(
+      (plante) => plante.typeArrosage === 'humidité'
+    ).length;
+    this.plantesPeriode = this.filteredPlantes.filter(
+      (plante) => plante.typeArrosage === 'période'
+    ).length;
+  }
+
   get paginatedPlantes(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredPlantes.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.filteredPlantes.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
   }
 
-  // Pagination : changer de page
   changePage(page: number): void {
     this.currentPage = page;
   }
 
-  // Pagination : obtenir le nombre total de pages
   get totalPages(): number {
     return Math.ceil(this.filteredPlantes.length / this.itemsPerPage);
   }
 
-  // Pagination : générer un tableau de pages pour la navigation
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-  // Ouvrir le modal de modification
-  openEditModal(plante: any): void {
-    this.selectedPlante = plante;
-    this.editPlanteForm.patchValue({
-      nom: plante.nom,
-      besoinEau: plante.besoinEau,
-      typeArrosage: plante.typeArrosage,
-      humidite: plante.humidite,
-      periode: plante.periode,
-    });
-
-    // Générer les champs d'heure si le type d'arrosage est 'période'
-    if (plante.typeArrosage === 'période' && plante.heuresArrosage) {
-      const heuresArrosageArray = this.editPlanteForm.get('heuresArrosage') as FormArray;
-      heuresArrosageArray.clear();
-      plante.heuresArrosage.forEach((heure: string) => {
-        heuresArrosageArray.push(this.fb.control(heure, Validators.required));
-      });
-    }
-
-    this.showEditModal = true;
-  }
-
-  // Fermer le modal de modification
-  closeEditModal(): void {
-    this.showEditModal = false;
-    this.selectedPlante = null;
-    this.editPlanteForm.reset();
-  }
-
-  // Générer des champs d'heure dynamiquement en fonction de la période
-  genererChampsHeures(periode: number): void {
-    const heuresArrosageArray = this.editPlanteForm.get('heuresArrosage') as FormArray;
-    heuresArrosageArray.clear(); // Réinitialiser les champs existants
-
-    for (let i = 0; i < periode; i++) {
-      heuresArrosageArray.push(new FormControl('', Validators.required));
-    }
-  }
-
-  // Obtenir le FormArray des heures d'arrosage
-  get heuresArrosageControls(): FormControl[] {
-    return (this.editPlanteForm.get('heuresArrosage') as FormArray).controls as FormControl[];
-  }
-
-  // Soumettre le formulaire de modification
-  onSubmitEditForm(): void {
-    if (this.editPlanteForm.invalid) {
-      Swal.fire('Erreur', 'Veuillez remplir le formulaire correctement.', 'error');
-      return;
-    }
-
-    const updatedPlante = this.editPlanteForm.value;
-
-    // Formater les heures d'arrosage
-    if (updatedPlante.typeArrosage === 'période') {
-      updatedPlante.heuresArrosage = updatedPlante.heuresArrosage;
-    } else {
-      delete updatedPlante.heuresArrosage;
-    }
-
-    // Appeler le service pour mettre à jour la plante
-    this.planteService.updatePlante(this.selectedPlante._id, updatedPlante).subscribe({
-      next: (res) => {
-        Swal.fire('Succès', 'Plante mise à jour avec succès!', 'success');
-        this.loadPlantes(); // Recharger la liste des plantes
-        this.closeEditModal(); // Fermer le modal
-      },
-      error: (err) => {
-        Swal.fire('Erreur', 'Une erreur s\'est produite lors de la mise à jour de la plante.', 'error');
-      },
-    });
-  }
-  // Supprimer une plante
   deletePlante(planteId: string): void {
     Swal.fire({
       title: 'Êtes-vous sûr ?',
-      text: 'Vous ne pourrez pas revenir en arrière !',
+      text: 'Voulez-vous vraiment supprimer cette plante ?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -185,11 +150,23 @@ export class PlanteListComponent implements OnInit {
       if (result.isConfirmed) {
         this.planteService.deletePlante(planteId).subscribe({
           next: () => {
-            Swal.fire('Supprimé !', 'La plante a été supprimée avec succès.', 'success');
-            this.loadPlantes(); // Recharger la liste des plantes
+            this.plantes = this.plantes.filter(
+              (plante) => plante._id !== planteId
+            );
+            this.applyFilters();
+            Swal.fire(
+              'Succès !',
+              'La plante a été supprimée avec succès.',
+              'success'
+            );
           },
           error: (err) => {
-            Swal.fire('Erreur', 'Une erreur s\'est produite lors de la suppression de la plante.', 'error');
+            console.error('Erreur lors de la suppression de la plante', err);
+            Swal.fire(
+              'Erreur !',
+              "Une erreur s'est produite lors de la suppression de la plante.",
+              'error'
+            );
           },
         });
       }

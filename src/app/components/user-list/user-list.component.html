@@ -1,41 +1,71 @@
 <div class="container mt-4">
-  <!-- En-tête des statistiques -->
   <div class="header-stats">
     <div class="stat">
-      <div class="stat-icon">
-        <i class="fas fa-users"></i>
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-value">{{ totalUsers }}</div>
       </div>
-      <div class="stat-value">{{ totalUsers }}</div>
       <div class="stat-label">Utilisateurs Totales</div>
     </div>
     <div class="divider"></div>
     <div class="stat">
-      <div class="stat-icon">
-        <i class="fas fa-user-check"></i>
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-value">{{ activeUsers }}</div>
       </div>
-      <div class="stat-value">{{ activeUsers }}</div>
       <div class="stat-label">Utilisateurs Actifs</div>
     </div>
     <div class="divider"></div>
     <div class="stat">
-      <div class="stat-icon">
-        <i class="fas fa-id-card"></i>
+      <div class="stat-content">
+        <div class="stat-icon">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <div class="stat-value">{{ usersWithRFID }}</div>
       </div>
-      <div class="stat-value">{{ usersWithRFID }}</div>
       <div class="stat-label">Carte RFID Assignée</div>
     </div>
   </div>
 
-  <!-- Titre -->
-  <h2 class="mb-4 text-center text-primary">Liste des Utilisateurs</h2>
-  <!-- Ajoutez ceci en haut de votre template -->
-  <button class="open-modal-btn" (click)="openAddUserModal()">
-    <i class="fas fa-plus"></i> Créer un Utilisateur
-  </button>
-
-  <!-- Ajoutez ce composant modal -->
+  <div class="header">
+    <h2 class="title">Liste des Utilisateurs</h2>
+    <button class="create-button" (click)="openAddUserModal()">
+      <i class="fas fa-plus"></i> Créer un Utilisateur
+    </button>
+  </div>
   <app-add-user #addUserModal></app-add-user>
-  <!-- Bouton d'archivage groupé -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Rechercher par nom ou prénom..."
+      class="filter-input"
+      [(ngModel)]="searchQuery"
+      (input)="applyFilters()"
+    />
+    <select
+      class="filter-select"
+      [(ngModel)]="archiveFilter"
+      (change)="applyFilters()"
+    >
+      <option value="all">Tous</option>
+      <option value="archived">Archivés</option>
+      <option value="nonArchived">Non archivés</option>
+    </select>
+    <select
+      class="filter-select"
+      [(ngModel)]="roleFilter"
+      (change)="applyFilters()"
+    >
+      <option value="all">Tous</option>
+      <option value="admin">Administrateur</option>
+      <option value="user">Utilisateur</option>
+    </select>
+  </div>
+
   <div class="mb-3 text-end" *ngIf="selectedUsers.size > 0">
     <button class="btn btn-danger" (click)="archiveSelectedUsers()">
       <i class="fas fa-archive me-2"></i>Archiver les sélectionnés ({{
@@ -44,209 +74,122 @@
     </button>
   </div>
 
-  <!-- Barre de recherche et filtres -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body">
-      <div class="row g-3">
-        <!-- Barre de recherche -->
-        <div class="col-md-6">
+  <table class="event-table">
+    <thead>
+      <tr class="table-header">
+        <th class="table-cell text-center">
           <input
-            type="text"
-            class="form-control"
-            placeholder="Rechercher par nom ou prénom..."
-            [(ngModel)]="searchQuery"
-            (input)="applyFilters()"
+            type="checkbox"
+            [checked]="areAllUsersSelected()"
+            (change)="toggleAllUsers()"
           />
-        </div>
-
-        <!-- Filtre d'archivage -->
-        <div class="col-md-3">
-          <label class="form-label">Statut :</label>
-          <div class="d-flex gap-3">
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="archiveFilter"
-                id="filterAll"
-                value="all"
-                [(ngModel)]="archiveFilter"
-                (change)="applyFilters()"
-              />
-              <label class="form-check-label" for="filterAll">Tous</label>
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="archiveFilter"
-                id="filterArchived"
-                value="archived"
-                [(ngModel)]="archiveFilter"
-                (change)="applyFilters()"
-              />
-              <label class="form-check-label" for="filterArchived"
-                >Archivés</label
-              >
-            </div>
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="archiveFilter"
-                id="filterNonArchived"
-                value="nonArchived"
-                [(ngModel)]="archiveFilter"
-                (change)="applyFilters()"
-              />
-              <label class="form-check-label" for="filterNonArchived"
-                >Non archivés</label
-              >
-            </div>
+        </th>
+        <th class="table-cell">Photo</th>
+        <th class="table-cell">Nom</th>
+        <th class="table-cell">Prénom</th>
+        <th class="table-cell">Rôle</th>
+        <th class="table-cell">Téléphone</th>
+        <th class="table-cell">Carte RFID</th>
+        <th class="table-cell">Statut</th>
+        <th class="table-cell">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of paginatedUsers" class="table-row">
+        <td class="table-cell text-center">
+          <input
+            type="checkbox"
+            [checked]="isSelected(user._id)"
+            (change)="toggleUserSelection(user._id)"
+          />
+        </td>
+        <td class="table-cell">
+          <div class="d-flex justify-content-center">
+            <img
+              *ngIf="user.photo"
+              [src]="'http://localhost:3500/' + user.photo"
+              alt="Photo de profil"
+              class="rounded-circle img-thumbnail cursor-pointer"
+              style="width: 50px; height: 50px; object-fit: cover"
+              (click)="openUserDetailsModal(user)"
+            />
+            <img
+              *ngIf="!user.photo"
+              src="icon.png"
+              alt="Photo de profil"
+              class="rounded-circle img-thumbnail cursor-pointer"
+              style="width: 50px; height: 50px; object-fit: cover"
+              (click)="openUserDetailsModal(user)"
+            />
           </div>
-        </div>
-
-        <!-- Filtre de rôle -->
-        <div class="col-md-3">
-          <label class="form-label">Rôle :</label>
-          <select
-            class="form-select"
-            [(ngModel)]="roleFilter"
-            (change)="applyFilters()"
+        </td>
+        <td class="table-cell">{{ user.nom }}</td>
+        <td class="table-cell">{{ user.prenom }}</td>
+        <td class="table-cell">
+          <span
+            class="badge"
+            [ngClass]="user.role === 'admin' ? 'bg-primary' : 'bg-secondary'"
           >
-            <option value="all">Tous</option>
-            <option value="admin">Administrateur</option>
-            <option value="user">Utilisateur</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
+            {{ user.role === "admin" ? "Administrateur" : "Utilisateur" }}
+          </span>
+        </td>
+        <td class="table-cell">{{ user.telephone }}</td>
+        <td class="table-cell">
+          <span *ngIf="user.carteRFID; else assignButton">{{
+            user.carteRFID
+          }}</span>
+          <ng-template #assignButton>
+            <button class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-id-card"></i> Assigner
+            </button>
+          </ng-template>
+        </td>
+        <td class="table-cell">
+          <span
+            class="badge"
+            [ngClass]="user.archived ? 'bg-danger' : 'bg-success'"
+          >
+            {{ user.archived ? "Inactive" : "Active" }}
+          </span>
+        </td>
+        <td class="table-cell">
+          <button
+            class="edit-button"
+            title="Modifier"
+            (click)="openEditModal(user)"
+          >
+            <i class="fas fa-edit"></i>
+          </button>
+          <button
+            class="delete-button"
+            title="Archiver"
+            (click)="archiveUser(user._id)"
+          >
+            <i class="fas fa-archive"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  <!-- Tableau des utilisateurs -->
-  <div class="card shadow-sm">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th scope="col" class="text-center">
-                <input
-                  type="checkbox"
-                  [checked]="areAllUsersSelected()"
-                  (change)="toggleAllUsers()"
-                />
-              </th>
-              <th scope="col" class="text-center">Photo</th>
-              <th scope="col" class="text-center">Nom</th>
-              <th scope="col" class="text-center">Prénom</th>
-              <th scope="col" class="text-center">Rôle</th>
-              <th scope="col" class="text-center">Telephone</th>
-              <th scope="col" class="text-center">Carte RFID</th>
-              <th scope="col" class="text-center">Statut</th>
-              <th scope="col" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of paginatedUsers">
-              <!-- Case à cocher -->
-              <td class="text-center align-middle">
-                <input
-                  type="checkbox"
-                  [checked]="isSelected(user._id)"
-                  (change)="toggleUserSelection(user._id)"
-                />
-              </td>
+  <nav *ngIf="totalPages > 1" class="pagination">
+    <ul>
+      <li [class.disabled]="currentPage === 1">
+        <a (click)="changePage(currentPage - 1)" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li *ngFor="let page of pages" [class.active]="page === currentPage">
+        <a (click)="changePage(page)">{{ page }}</a>
+      </li>
+      <li [class.disabled]="currentPage === totalPages">
+        <a (click)="changePage(currentPage + 1)" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
-              <!-- Photo -->
-              <td class="text-center align-middle">
-                <div class="d-flex justify-content-center">
-                  <img
-                    *ngIf="user.photo"
-                    [src]="'http://localhost:3500/' + user.photo"
-                    alt="Photo de profil"
-                    class="rounded-circle img-thumbnail cursor-pointer"
-                    style="width: 50px; height: 50px; object-fit: cover"
-                    (click)="openUserDetailsModal(user)"
-                  />
-                  <span
-                    *ngIf="!user.photo"
-                    class="text-muted cursor-pointer"
-                    (click)="openUserDetailsModal(user)"
-                  >
-                    Aucune photo
-                  </span>
-                </div>
-              </td>
-
-              <!-- Nom -->
-              <td class="text-center align-middle">{{ user.nom }}</td>
-
-              <!-- Prénom -->
-              <td class="text-center align-middle">{{ user.prenom }}</td>
-
-              <!-- Rôle -->
-              <td class="text-center align-middle">
-                <span
-                  class="badge"
-                  [ngClass]="
-                    user.role === 'admin' ? 'bg-primary' : 'bg-secondary'
-                  "
-                >
-                  {{ user.role === "admin" ? "Administrateur" : "Utilisateur" }}
-                </span>
-              </td>
-
-              <!-- Telephone -->
-              <td class="text-center align-middle">{{ user.telephone }}</td>
-
-              <!-- Carte RFID -->
-              <td class="text-center align-middle">
-                <span *ngIf="user.carteRFID; else assignButton">
-                  {{ user.carteRFID }}
-                </span>
-                <ng-template #assignButton>
-                  <button class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-id-card"></i> Assigner
-                  </button>
-                </ng-template>
-              </td>
-
-              <!-- Statut -->
-              <td class="text-center align-middle">
-                <span
-                  class="badge"
-                  [ngClass]="user.archived ? 'bg-danger' : 'bg-success'"
-                >
-                  {{ user.archived ? "Inactive" : "Active" }}
-                </span>
-              </td>
-
-              <!-- Actions -->
-              <td class="text-center align-middle">
-                <button
-                  class="btn btn-sm btn-outline-warning me-2"
-                  (click)="openEditModal(user)"
-                  title="Modifier"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="archiveUser(user._id)"
-                  title="Archiver"
-                >
-                  <i class="fas fa-archive"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pagination -->
   <nav *ngIf="totalPages > 1" class="mt-4 d-flex justify-content-center">
     <ul class="pagination">
       <li class="page-item" [class.disabled]="currentPage === 1">
@@ -276,96 +219,141 @@
       </li>
     </ul>
   </nav>
-</div>
 
-<!-- Modal pour afficher les informations de l'utilisateur -->
-<div *ngIf="selectedUserDetails" class="modal-backdrop fade show"></div>
-<div
-  *ngIf="selectedUserDetails"
-  class="modal fade show d-block"
-  tabindex="-1"
-  role="dialog"
->
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header bg-light">
-        <h5 class="modal-title text-primary">Détails de l'Utilisateur</h5>
-        <button
-          type="button"
-          class="close"
-          (click)="closeUserDetailsModal()"
-          aria-label="Fermer"
+  <app-edit-user
+    *ngIf="showEditModal"
+    [user]="selectedUser"
+    (closeModal)="closeEditModal()"
+    (userUpdated)="onUserUpdated($event)"
+  ></app-edit-user>
+
+  <div *ngIf="selectedUserDetails" class="modal-backdrop fade show"></div>
+  <div
+    *ngIf="selectedUserDetails"
+    class="modal fade show d-block"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content border-0 shadow-lg">
+        <div
+          class="modal-header"
+          style="background-color: #8bc34a; color: white; padding: 1.5rem"
         >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="text-center mb-4">
-          <img
-            *ngIf="selectedUserDetails.photo"
-            [src]="'http://localhost:3500/' + selectedUserDetails.photo"
-            alt="Photo de profil"
-            class="rounded-circle img-thumbnail"
-            style="width: 150px; height: 150px; object-fit: cover"
-          />
-          <span *ngIf="!selectedUserDetails.photo" class="text-muted"
-            >Aucune photo</span
+          <div class="d-flex align-items-center">
+            <h4 class="modal-title fw-bold mb-0">Profil Utilisateur</h4>
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white"
+            (click)="closeUserDetailsModal()"
+            aria-label="Fermer"
+          ></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="row g-0">
+            <div class="col-md-4 bg-light position-relative text-center p-5">
+              <div
+                class="position-absolute top-50 start-50 translate-middle text-center"
+              >
+                <div class="mb-4">
+                  <img
+                    *ngIf="selectedUserDetails.photo"
+                    [src]="'http://localhost:3500/' + selectedUserDetails.photo"
+                    alt="Photo de profil"
+                    class="img-fluid rounded-circle shadow"
+                    style="width: 200px; height: 200px; object-fit: cover"
+                  />
+                  <div
+                    *ngIf="!selectedUserDetails.photo"
+                    class="rounded-circle bg-white shadow d-flex align-items-center justify-content-center"
+                    style="width: 200px; height: 200px; margin: 0 auto"
+                  >
+                    <span class="text-muted">Aucune photo</span>
+                  </div>
+                </div>
+                <div
+                  class="badge text-uppercase fs-6 mb-2"
+                  [ngClass]="
+                    selectedUserDetails.role === 'admin'
+                      ? 'bg-primary'
+                      : 'bg-secondary'
+                  "
+                >
+                  {{
+                    selectedUserDetails.role === "admin"
+                      ? "Administrateur"
+                      : "Utilisateur"
+                  }}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-8 p-5">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase"
+                      >Nom</label
+                    >
+                    <div class="fs-5 fw-bold">
+                      {{ selectedUserDetails.nom }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase"
+                      >Prénom</label
+                    >
+                    <div class="fs-5 fw-bold">
+                      {{ selectedUserDetails.prenom }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase"
+                      >Téléphone</label
+                    >
+                    <div class="fs-5 fw-bold">
+                      {{ selectedUserDetails.telephone }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase"
+                      >Code Secret</label
+                    >
+                    <div class="fs-5 fw-bold">
+                      {{ selectedUserDetails.codeSecret }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase"
+                      >Carte RFID</label
+                    >
+                    <div class="fs-5 fw-bold">
+                      {{ selectedUserDetails.carteRFID || "Non assignée" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 bg-light p-4">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeUserDetailsModal()"
           >
+            Fermer
+          </button>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Nom :</label>
-          <p>{{ selectedUserDetails.nom }}</p>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Prénom :</label>
-          <p>{{ selectedUserDetails.prenom }}</p>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Rôle :</label>
-          <p>
-            <span
-              class="badge"
-              [ngClass]="
-                selectedUserDetails.role === 'admin'
-                  ? 'bg-primary'
-                  : 'bg-secondary'
-              "
-            >
-              {{
-                selectedUserDetails.role === "admin"
-                  ? "Administrateur"
-                  : "Utilisateur"
-              }}
-            </span>
-          </p>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Téléphone :</label>
-          <p>{{ selectedUserDetails.telephone }}</p>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Code Secret :</label>
-          <p>{{ selectedUserDetails.codeSecret }}</p>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-bold">Carte RFID :</label>
-          <p>{{ selectedUserDetails.carteRFID || "Non assignée" }}</p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          (click)="closeUserDetailsModal()"
-        >
-          Fermer
-        </button>
       </div>
     </div>
   </div>

@@ -15,96 +15,61 @@ import { EditUserComponent } from '../edit-user/edit-user.component';
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, AddUserComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AddUserComponent,
+    EditUserComponent,
+  ],
   templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.css',
+  styleUrls: ['./user-list.component.css'],
 })
 export class UserListComponent implements OnInit {
-  users: any[] = []; // Liste complète des utilisateurs
-  filteredUsers: any[] = []; // Liste filtrée des utilisateurs
-  currentPage: number = 1; // Page actuelle
-  itemsPerPage: number = 10; // Nombre d'utilisateurs par page
-  searchQuery: string = ''; // Terme de recherche
-  archiveFilter: string = 'all'; // Filtre pour les utilisateurs archivés/non archivés
-  selectedUsers: Set<string> = new Set(); // IDs des utilisateurs sélectionnés
-  roleFilter: string = 'all'; // Filtre pour les utilisateurs par rôle
-  // Ajoutez cette propriété
-  photoPreview: string | ArrayBuffer | null = null;
+  users: any[] = [];
+  filteredUsers: any[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  searchQuery: string = '';
+  archiveFilter: string = 'all';
+  selectedUsers: Set<string> = new Set();
+  roleFilter: string = 'all';
+  selectedUserDetails: any = null;
+  totalUsers: number = 0;
+  activeUsers: number = 0;
+  usersWithRFID: number = 0;
+  showEditModal: boolean = false;
+  selectedUser: any = null;
 
-  // Variables pour le modal de détails de l'utilisateur
-  selectedUserDetails: any = null; // Utilisateur sélectionné pour afficher les détails
+  @ViewChild('addUserModal') addUserModal!: AddUserComponent;
+  @ViewChild('editUserModal') editUserModal!: EditUserComponent;
 
-  // Statistiques
-  totalUsers: number = 0; // Nombre total d'utilisateurs
-  activeUsers: number = 0; // Nombre d'utilisateurs non archivés
-  usersWithRFID: number = 0; // Nombre d'utilisateurs avec carteRFID non nulle
-
-  // Variables pour le modal de modification
-  showEditModal: boolean = false; // Afficher ou masquer le modal
-  selectedUser: any = null; // Utilisateur sélectionné pour modification
-  editUserForm: FormGroup; // Formulaire de modification
-  selectedFile: File | null = null; // Nouvelle photo sélectionnée
-
-  constructor(private userService: UserService, private fb: FormBuilder) {
-    // Initialiser le formulaire de modification
-    this.editUserForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.pattern(/^[A-Z][a-zA-Z ]*$/)]],
-      prenom: [
-        '',
-        [Validators.required, Validators.pattern(/^[A-Z][a-zA-Z ]*$/)],
-      ],
-      telephone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      role: ['user', Validators.required],
-      photo: [null],
-    });
-  }
+  constructor(private userService: UserService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
-  // Ajoutez cette référence
-  @ViewChild('addUserModal') addUserModal!: AddUserComponent;
-  @ViewChild('editUserModal') editUserModal!: EditUserComponent;
 
-  // Ajoutez cette méthode
   openAddUserModal() {
     this.addUserModal.openModal();
   }
-
-  openEditModal(user: any): void {
-    this.editUserModal.openModal(user); // Transmettre l'utilisateur
+  closeAddUserModal() {
+    this.addUserModal.closeModal();
   }
 
-  // Ajouter le handler pour les mises à jour
-  onUserUpdated(updatedUser: any): void {
-    // Mettre à jour la liste
-    const index = this.users.findIndex((u) => u._id === updatedUser._id);
-    if (index > -1) {
-      this.users[index] = updatedUser;
-      this.applyFilters();
-    }
-
-    Swal.fire('Succès!', 'Utilisateur mis à jour', 'success');
-  }
-
-  // Ouvrir le modal des détails de l'utilisateur
   openUserDetailsModal(user: any): void {
     this.selectedUserDetails = user;
   }
 
-  // Fermer le modal des détails de l'utilisateur
   closeUserDetailsModal(): void {
     this.selectedUserDetails = null;
   }
 
-  // Charger tous les utilisateurs
   loadUsers(): void {
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
-        this.filteredUsers = data; // Initialiser la liste filtrée
-
-        // Calculer les statistiques
+        this.filteredUsers = data;
         this.totalUsers = this.users.length;
         this.activeUsers = this.users.filter((user) => !user.archived).length;
         this.usersWithRFID = this.users.filter(
@@ -117,78 +82,56 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  // Modifiez la méthode onFileSelected
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      this.editUserForm.patchValue({ photo: file });
-
-      // Aperçu de la nouvelle image
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.photoPreview = reader.result;
-      };
-      reader.readAsDataURL(file);
-    }
+  openEditModal(user: any): void {
+    this.selectedUser = user;
+    this.showEditModal = true;
   }
 
-  // Appliquer les filtres (recherche et filtre d'archivage)
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.selectedUser = null;
+  }
+
+  onUserUpdated(updatedUser: any): void {
+    this.users = this.users.map((user) =>
+      user._id === updatedUser._id ? updatedUser : user
+    );
+    this.applyFilters();
+  }
+
   applyFilters(): void {
     this.filteredUsers = this.users.filter((user) => {
-      // Filtre de recherche par nom ou prénom
       const matchesSearch =
         user.nom.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         user.prenom.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-      // Filtre d'archivage
       const matchesArchiveFilter =
         this.archiveFilter === 'all' ||
         (this.archiveFilter === 'archived' && user.archived) ||
         (this.archiveFilter === 'nonArchived' && !user.archived);
-
-      // Filtre de rôle
       const matchesRoleFilter =
         this.roleFilter === 'all' || user.role === this.roleFilter;
-
       return matchesSearch && matchesArchiveFilter && matchesRoleFilter;
     });
-
-    this.currentPage = 1; // Réinitialiser la pagination après l'application des filtres
+    this.currentPage = 1;
   }
 
-  // Filtrer les utilisateurs par nom ou prénom
-  filterUsers(): void {
-    this.filteredUsers = this.users.filter(
-      (user) =>
-        user.nom.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        user.prenom.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-    this.currentPage = 1; // Réinitialiser la pagination après la recherche
-  }
-
-  // Pagination : obtenir les utilisateurs pour la page actuelle
   get paginatedUsers(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredUsers.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
-  // Pagination : changer de page
   changePage(page: number): void {
     this.currentPage = page;
   }
 
-  // Pagination : obtenir le nombre total de pages
   get totalPages(): number {
     return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
 
-  // Pagination : générer un tableau de pages pour la navigation
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
-  // Sélectionner ou désélectionner un utilisateur
   toggleUserSelection(userId: string): void {
     if (this.selectedUsers.has(userId)) {
       this.selectedUsers.delete(userId);
@@ -197,12 +140,10 @@ export class UserListComponent implements OnInit {
     }
   }
 
-  // Vérifier si un utilisateur est sélectionné
   isSelected(userId: string): boolean {
     return this.selectedUsers.has(userId);
   }
 
-  // Sélectionner ou désélectionner tous les utilisateurs de la page actuelle
   toggleAllUsers(): void {
     if (this.areAllUsersSelected()) {
       this.selectedUsers.clear();
@@ -211,19 +152,12 @@ export class UserListComponent implements OnInit {
     }
   }
 
-  // Vérifier si tous les utilisateurs de la page actuelle sont sélectionnés
   areAllUsersSelected(): boolean {
     return this.paginatedUsers.every((user) =>
       this.selectedUsers.has(user._id)
     );
   }
 
-  // Actions
-  editUser(userId: string): void {
-    console.log('Modifier l’utilisateur avec l’ID :', userId);
-  }
-
-  // Archiver ou désarchiver un utilisateur
   archiveUser(userId: string): void {
     const user = this.users.find((u) => u._id === userId);
     if (!user) return;
@@ -250,11 +184,8 @@ export class UserListComponent implements OnInit {
 
         archiveObservable.subscribe({
           next: () => {
-            // Mettre à jour la valeur de `archived` dans la liste des utilisateurs
             user.archived = !user.archived;
-            this.filterUsers(); // Re-filtrer la liste pour refléter les changements
-
-            // Afficher une notification de succès
+            this.applyFilters();
             Swal.fire({
               title: 'Succès !',
               text: `L'utilisateur a été ${action} avec succès.`,
@@ -264,8 +195,6 @@ export class UserListComponent implements OnInit {
           },
           error: (err) => {
             console.error(`Erreur lors de l'${action} de l'utilisateur`, err);
-
-            // Afficher une notification d'erreur
             Swal.fire({
               title: 'Erreur !',
               text: `Une erreur s'est produite lors de l'${action} de l'utilisateur.`,
@@ -277,7 +206,7 @@ export class UserListComponent implements OnInit {
       }
     });
   }
-  // Archiver les utilisateurs sélectionnés
+
   archiveSelectedUsers(): void {
     Swal.fire({
       title: 'Êtes-vous sûr ?',
@@ -296,7 +225,6 @@ export class UserListComponent implements OnInit {
 
         Promise.all(archiveRequests)
           .then(() => {
-            // Mettre à jour les utilisateurs archivés
             this.users = this.users.map((user) => {
               if (this.selectedUsers.has(user._id)) {
                 return { ...user, archived: true };
@@ -304,10 +232,9 @@ export class UserListComponent implements OnInit {
               return user;
             });
 
-            this.selectedUsers.clear(); // Vider la sélection
-            this.applyFilters(); // Re-appliquer les filtres
+            this.selectedUsers.clear();
+            this.applyFilters();
 
-            // Afficher une notification de succès
             Swal.fire({
               title: 'Succès !',
               text: `${archiveRequests.length} utilisateur(s) archivé(s) avec succès.`,
@@ -317,8 +244,6 @@ export class UserListComponent implements OnInit {
           })
           .catch((err) => {
             console.error("Erreur lors de l'archivage des utilisateurs", err);
-
-            // Afficher une notification d'erreur
             Swal.fire({
               title: 'Erreur !',
               text: "Une erreur s'est produite lors de l'archivage des utilisateurs.",

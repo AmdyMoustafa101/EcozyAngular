@@ -1,0 +1,119 @@
+<div class="modal-overlay" *ngIf="plante">
+  <div class="container">
+    <h2>Modifier la Plante</h2>
+    <form
+      [formGroup]="editPlanteForm"
+      (ngSubmit)="onSubmitEditForm()"
+      enctype="multipart/form-data"
+    >
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="editNom">
+          Nom
+          <span>*</span>
+        </label>
+        <input
+          type="text"
+          id="editNom"
+          formControlName="nom"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Besoin en eau -->
+      <div class="form-group">
+        <label for="editBesoinEau">
+          Besoin en eau (L)
+          <span>*</span>
+        </label>
+        <input
+          type="number"
+          id="editBesoinEau"
+          formControlName="besoinEau"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Type d'arrosage -->
+      <div class="form-group">
+        <label for="editTypeArrosage">Type d'arrosage</label>
+        <div class="relative">
+          <select
+            class="custom-select"
+            id="editTypeArrosage"
+            formControlName="typeArrosage"
+          >
+            <option value="humidité">Humidité</option>
+            <option value="période">Période</option>
+          </select>
+          <div class="select-icon"></div>
+        </div>
+      </div>
+
+      <!-- Humidité -->
+      <div
+        class="form-group"
+        *ngIf="editPlanteForm.get('typeArrosage')?.value === 'humidité'"
+      >
+        <label for="editHumidite">
+          Humidité (%)
+          <span>*</span>
+        </label>
+        <input
+          type="number"
+          id="editHumidite"
+          formControlName="humidite"
+          class="form-control"
+        />
+      </div>
+
+      <!-- Période et heures d'arrosage -->
+      <div *ngIf="editPlanteForm.get('typeArrosage')?.value === 'période'">
+        <!-- Période -->
+        <div class="form-group">
+          <label for="editPeriode">
+            Période (nombre d'arrosages par jour)
+            <span>*</span>
+          </label>
+          <input
+            type="number"
+            id="editPeriode"
+            formControlName="periode"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Heures d'arrosage -->
+        <div
+          class="form-group"
+          *ngFor="let control of heuresArrosageControls; let i = index"
+        >
+          <label [for]="'editHeure' + i">
+            Heure d'arrosage {{ i + 1 }}
+            <span>*</span>
+          </label>
+          <input
+            type="time"
+            [id]="'editHeure' + i"
+            [formControl]="control"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <!-- Boutons du modal -->
+      <div class="form-group">
+        <button type="button" class="cancel-btn" (click)="closeEditModal()">
+          Annuler
+        </button>
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="editPlanteForm.invalid"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

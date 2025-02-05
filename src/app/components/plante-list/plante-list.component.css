@@ -1,11 +1,248 @@
-/* Style pour les badges */
-.badge {
-  padding: 0.5em 1em;
-  font-size: 0.9em;
+/* Container styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+
+  border-radius: 0.5rem;
 }
 
-/* Style pour les boutons d'action */
-.btn-sm {
-  padding: 0.25em 0.5em;
-  font-size: 0.875em;
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #10b981;
+}
+
+.create-button {
+  background-color: #48bb78;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-button:hover {
+  background-color: #38a169;
+}
+
+/* Filters styles */
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-input,
+.filter-select {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #48bb78;
+  box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+}
+
+/* Stats styles */
+.stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.stat-item {
+  background-color: #d1fae5;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #10b981;
+}
+
+.stat-label {
+  color: #4b5563;
+}
+
+/* Table styles */
+.event-table {
+  width: 100%;
+  background-color: white;
+  border-collapse: collapse;
+}
+
+.table-header {
+  background-color: #f0fdf4;
+}
+
+.table-cell {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.table-row {
+  transition: all 0.3s ease;
+}
+
+.table-row:hover {
+  background-color: #f0fdf4;
+  transform: scale(1.01);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge styles */
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.badge-humidite {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.badge-periode {
+  background-color: #fef3c7;
+  color: #eab308;
+}
+
+/* Button styles */
+.edit-button,
+.delete-button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.edit-button:hover {
+  background-color: #a3e6bf;
+}
+
+.delete-button {
+  background-color: #fecaca;
+  color: #b91c1c;
+}
+
+.delete-button:hover {
+  background-color: #fca5a5;
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.pagination ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  margin: 0 0.5rem;
+}
+
+.pagination a {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: #10b981;
+  transition: background-color 0.3s ease;
+}
+
+.pagination a:hover {
+  background-color: #d1fae5;
+}
+
+.pagination .active a {
+  background-color: #48bb78;
+  color: white;
+}
+
+.pagination .disabled a {
+  pointer-events: none;
+  color: #ccc;
+}
+/* Header stats styles */
+.header-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.stat {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  color: #10b981;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #10b981;
+}
+
+.stat-label {
+  color: #4b5563;
+  margin-top: 0.5rem;
+}
+
+.divider {
+  width: 1px;
+  height: 4rem;
+  background-color: #e5e7eb;
 }

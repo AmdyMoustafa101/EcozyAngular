@@ -18,7 +18,7 @@ export class DashboardComponent implements AfterViewInit {
   chart: any;
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
-
+  isArrosageModalOpen = false;
   constructor() {
     this.updateWeekDates();
   }
