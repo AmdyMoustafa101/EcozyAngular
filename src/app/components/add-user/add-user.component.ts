@@ -16,6 +16,7 @@ export class AddUserComponent {
   successMessage: string = '';
   errorMessage: string = '';
   selectedFile: File | null = null;
+  base64Image: string | null = null;
 
   constructor(private fb: FormBuilder, private userService: UserService) {
     this.userForm = this.fb.group({
@@ -43,9 +44,13 @@ export class AddUserComponent {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
-      this.userForm.patchValue({ photo: file });
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.base64Image = reader.result as string; // Convertit l'image en Base64
+      };
+      reader.readAsDataURL(file); // Lire le fichier
     }
+    
   }
 
   onSubmit(): void {
@@ -56,7 +61,9 @@ export class AddUserComponent {
       formData.append('role', this.userForm.get('role')?.value);
       formData.append('telephone', this.userForm.get('telephone')?.value);
       if (this.selectedFile) {
-        formData.append('photo', this.selectedFile, this.selectedFile.name);
+        if (this.base64Image) {
+          formData.append('photo', this.base64Image);
+        }
       }
 
       this.userService.createUser(formData).subscribe({
@@ -74,6 +81,7 @@ export class AddUserComponent {
           this.selectedFile = null; // Réinitialiser le fichier sélectionné
         },
         error: (err) => {
+          console.log(err);
           Swal.fire({
             title: 'Erreur!',
             text: 'Erreur lors de la création de l’utilisateur',

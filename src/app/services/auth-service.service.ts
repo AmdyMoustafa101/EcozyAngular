@@ -11,8 +11,9 @@ export class AuthServiceService {
   constructor(private http: HttpClient) { }
   
 
-  login(code: string):Observable<any> {
-    return this.http.post(`${this.base_url}/login`, { code });
+  login(codeSecret: string):Observable<any> {
+    console.log(codeSecret);
+    return this.http.post(`${this.base_url}/login`, { codeSecret });
   }
 
 }

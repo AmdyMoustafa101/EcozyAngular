@@ -11,22 +11,32 @@
     <label for="code" class="label">Entrer votre Code</label>
     <div class="input">
       <div class="code-input">
-        <input
-          class="input-box"
-          *ngFor="let char of maskedCode; let i = index; trackBy: trackByIndex"
-          #codeInput
-          type="text"
-          maxlength="1"
-          (input)="onCodeInput($event, i)"
-          (keydown)="handleKeydown($event, i)"
-          [value]="char"
-        />
-        <div *ngIf="errorMessage" style="color: rgb(253, 7, 7);">
-          - {{ errorMessage }}
+        <div>
+          <div >
+            <input
+              class="input-box"
+              *ngFor="let char of maskedCode; let i = index; trackBy: trackByIndex"
+              #codeInput
+              type="text"
+              maxlength="1"
+              (input)="onCodeInput($event, i)"
+              (keydown)="handleKeydown($event, i)"
+              [value]="char"
+            />
+          </div>
+          <div *ngIf="errorMessageCode != ''" style="color: red; margin-left: 55px; margin-top: 25px;">
+            - {{ errorMessageCode }}
+          </div>
         </div>
+        
+      
       </div>
+      
       <img src="images/logo-projet.png" alt="image" class="image" />
+      
     </div>
+    
+    
 
     <p class="rfid">- Scanner votre carte RFID</p>
     <div *ngIf="errorMessage" style="color: rgb(253, 7, 7);">

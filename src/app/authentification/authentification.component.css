@@ -105,4 +105,9 @@
   .rfid {
     font-size: 14px; /* Réduit légèrement la taille du texte */
   }
+
+  .error {
+    color: rgb(253, 7, 7);
+   
+  }
 }

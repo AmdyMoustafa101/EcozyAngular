@@ -13,4 +13,5 @@ export const routes: Routes = [
   { path: 'users', component: UserListComponent },
   { path: 'new-plante', component: CreatePlanteComponent },
   { path: 'plantes', component: PlanteListComponent },
+
 ];
