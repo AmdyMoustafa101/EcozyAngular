@@ -1,0 +1,14 @@
+/* Assurez-vous que le modal est visible lorsqu'il est ouvert */
+.modal.show {
+  display: block;
+}
+
+/* Style pour le switch */
+.form-switch {
+  display: flex;
+  align-items: center;
+}
+
+.form-switch .form-check-input {
+  margin-right: 10px;
+}

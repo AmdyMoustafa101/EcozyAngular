@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-edit-plante',
+  standalone: true ,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-plante.component.html',
   styleUrls: ['./edit-plante.component.css'],
@@ -34,6 +35,10 @@ export class EditPlanteComponent implements OnInit {
       humidite: [null],
       periode: [null],
       heuresArrosage: this.fb.array([]),
+    });
+    // Gérer les changements de période
+    this.editPlanteForm.get('periode')?.valueChanges.subscribe((value) => {
+      this.genererChampsHeures(value);
     });
   }
 

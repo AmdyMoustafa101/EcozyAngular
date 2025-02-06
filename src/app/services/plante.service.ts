@@ -25,6 +25,18 @@ export class PlanteService {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
+  activePlante(id: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/activer`, { etat: true });
+  }
+
+  unactivePlante(id: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/desactiver`, { etat: false });
+  }
+
+  togglePlanteEtat(id: string, etat: boolean): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}/${etat ? 'activer' : 'desactiver'}`, {});
+  }
+
   // Mettre à jour une plante
   updatePlante(id: string, plante: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, plante);

@@ -1,0 +1,30 @@
+<div class="modal fade" [ngClass]="{'show': isOpen}" tabindex="-1" aria-labelledby="modifierProgrammeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modifierProgrammeModalLabel">
+          <i class="fas fa-edit"></i> Modifier le programme
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="modifierProgramme()">
+          <div class="mb-3">
+            <label for="dateDebut" class="form-label">Date de début:</label>
+            <input type="date" class="form-control" id="dateDebut" [(ngModel)]="programme.dateDebut" name="dateDebut" required>
+          </div>
+          <div class="mb-3">
+            <label for="dateFin" class="form-label">Date de fin:</label>
+            <input type="date" class="form-control" id="dateFin" [(ngModel)]="programme.dateFin" name="dateFin" required>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Enregistrer
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay pour assombrir l'arrière-plan -->
+<div class="modal-backdrop fade" [ngClass]="{'show': isOpen}" *ngIf="isOpen"></div>
