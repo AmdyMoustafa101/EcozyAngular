@@ -1,0 +1,81 @@
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h2 class="card-title">
+        <i class="fas fa-calendar-alt"></i> Programmer un arrosage
+      </h2>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="programmeForm" novalidate>
+        <!-- Date de début -->
+        <div class="mb-3">
+          <label for="dateDebut" class="form-label">
+            <i class="fas fa-calendar-day"></i> Date de début
+          </label>
+          <input
+            type="date"
+            id="dateDebut"
+            formControlName="dateDebut"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid': programmeForm.get('dateDebut')?.invalid && programmeForm.get('dateDebut')?.touched
+            }"
+          />
+          <div *ngIf="programmeForm.get('dateDebut')?.invalid && programmeForm.get('dateDebut')?.touched" class="invalid-feedback">
+            La date de début est obligatoire.
+          </div>
+        </div>
+
+        <!-- Date de fin -->
+        <div class="mb-3">
+          <label for="dateFin" class="form-label">
+            <i class="fas fa-calendar-week"></i> Date de fin
+          </label>
+          <input
+            type="date"
+            id="dateFin"
+            formControlName="dateFin"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid': (programmeForm.get('dateFin')?.invalid || programmeForm.errors?.['dateInvalide']) && programmeForm.get('dateFin')?.touched
+            }"
+          />
+          <div *ngIf="programmeForm.get('dateFin')?.invalid && programmeForm.get('dateFin')?.touched" class="invalid-feedback">
+            La date de fin est obligatoire.
+          </div>
+          <div *ngIf="programmeForm.errors?.['dateInvalide'] && programmeForm.get('dateFin')?.touched" class="invalid-feedback">
+            La date de fin doit être supérieure à la date de début.
+          </div>
+        </div>
+
+        <!-- Sélection de la plante -->
+        <div class="mb-3">
+          <label for="idPlante" class="form-label">
+            <i class="fas fa-seedling"></i> Plante
+          </label>
+          <select
+            id="idPlante"
+            formControlName="idPlante"
+            class="form-control"
+            [ngClass]="{
+              'is-invalid': programmeForm.get('idPlante')?.invalid && programmeForm.get('idPlante')?.touched
+            }"
+          >
+            <option value="">Sélectionnez une plante</option>
+            <option *ngFor="let plante of plantes" [value]="plante._id">
+              {{ plante.nom }}
+            </option>
+          </select>
+          <div *ngIf="programmeForm.get('idPlante')?.invalid && programmeForm.get('idPlante')?.touched" class="invalid-feedback">
+            La sélection d'une plante est obligatoire.
+          </div>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <button type="submit" class="btn btn-primary" [disabled]="programmeForm.invalid">
+          <i class="fas fa-save"></i> Programmer
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

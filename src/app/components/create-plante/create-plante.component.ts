@@ -57,6 +57,7 @@ export class CreatePlanteComponent implements OnInit {
     this.planteForm.get('heuresArrosage')?.updateValueAndValidity();
   }
 
+
   // Générer des champs d'heure dynamiquement en fonction de la période
   genererChampsHeures(periode: number): void {
     const heuresArrosageArray = this.planteForm.get('heuresArrosage') as FormArray;

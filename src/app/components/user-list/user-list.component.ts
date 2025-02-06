@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 })
 export class UserListComponent implements OnInit {
   users: any[] = []; // Liste complète des utilisateurs
+
   filteredUsers: any[] = []; // Liste filtrée des utilisateurs
   currentPage: number = 1; // Page actuelle
   itemsPerPage: number = 10; // Nombre d'utilisateurs par page

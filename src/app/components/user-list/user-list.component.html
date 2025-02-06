@@ -307,8 +307,14 @@
 
             <!-- Téléphone -->
             <div class="mb-3">
-              <label for="telephone" class="form-label">Téléphone</label>
-              <input type="number" id="telephone" formControlName="telephone" class="form-control" placeholder="Entrez le téléphone" required />
+              <label for="editTelephone" class="form-label">Téléphone :</label>
+              <input type="number" id="editTelephone" formControlName="telephone" class="form-control" placeholder="Entrez le téléphone" required />
+              <div *ngIf="editUserForm.get('telephone')?.invalid && editUserForm.get('telephone')?.touched" class="text-danger">
+                <small *ngIf="editUserForm.get('telephone')?.errors?.['required']">Le telephone est obligatoire.</small>
+                <small *ngIf="editUserForm.get('telephone')?.errors?.['pattern']">
+                  Le telephone doit contenir 9 nombres.
+                </small>
+              </div>
             </div>
 
             <!-- Rôle -->
@@ -409,4 +415,5 @@
       </div>
     </div>
   </div>
+
 </div>

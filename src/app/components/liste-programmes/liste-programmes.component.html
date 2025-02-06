@@ -1,0 +1,129 @@
+<div class="container mt-5">
+  <h2 class="mb-4">
+    <i class="fas fa-calendar-alt"></i> Liste des Programmes d'Arrosage
+  </h2>
+
+  <!-- Bouton pour ouvrir le modal de création -->
+  <button class="btn btn-success mb-3" (click)="ouvrirModalCreation()">
+    <i class="fas fa-plus"></i> Créer un programme
+  </button>
+
+  <!-- Tableau des programmes -->
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Date de début</th>
+        <th>Date de fin</th>
+        <th>Plante</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let programme of programmes">
+        <td>{{ programme.dateDebut | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ programme.dateFin | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ getNomPlante(programme.idPlante) }}</td>
+        <td>
+          <div class="form-check form-switch">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [checked]="programme.etat"
+              (change)="changerEtatProgramme(programme)"
+            />
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary me-2" (click)="ouvrirModalEdition(programme)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="supprimerProgramme(programme._id!)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal d'édition -->
+  <div class="modal" [ngClass]="{ show: showModal }" tabindex="-1" role="dialog" [ngStyle]="{ display: showModal ? 'block' : 'none' }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modifier le Programme</h5>
+          <button type="button" class="btn-close" (click)="fermerModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="programmeForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="dateDebut" class="form-label">Date de début</label>
+              <input type="date" id="dateDebut" formControlName="dateDebut" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label for="dateFin" class="form-label">Date de fin</label>
+              <input type="date" id="dateFin" formControlName="dateFin" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label for="idPlante" class="form-label">Plante</label>
+              <select id="idPlante" formControlName="idPlante" class="form-control">
+                <option *ngFor="let plante of plantes" [value]="plante._id">{{ plante.nom }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="etat" class="form-label">Statut</label>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" formControlName="etat" id="etat" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de création -->
+  <div class="modal" [ngClass]="{ show: showCreateModal }" tabindex="-1" role="dialog" [ngStyle]="{ display: showCreateModal ? 'block' : 'none' }">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Créer un nouveau programme</h5>
+          <button type="button" class="btn-close" (click)="fermerCreateModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="createProgrammeForm" (ngSubmit)="onSubmitCreate()">
+            <div class="mb-3">
+              <label for="dateDebutCreate" class="form-label">Date de début</label>
+              <input type="date" id="dateDebutCreate" formControlName="dateDebut" class="form-control" />
+              <div *ngIf="createProgrammeForm.get('dateDebut')?.invalid && createProgrammeForm.get('dateDebut')?.touched" class="invalid-feedback">
+                La date de début est obligatoire.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="dateFinCreate" class="form-label">Date de fin</label>
+              <input type="date" id="dateFinCreate" formControlName="dateFin" class="form-control" />
+              <div *ngIf="createProgrammeForm.get('dateFin')?.invalid && createProgrammeForm.get('dateFin')?.touched" class="invalid-feedback">
+                La date de fin est obligatoire.
+              </div>
+              <div *ngIf="createProgrammeForm.errors?.['dateInvalide'] && createProgrammeForm.get('dateFin')?.touched" class="invalid-feedback">
+                La date de fin doit être supérieure à la date de début.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="idPlanteCreate" class="form-label">Plante</label>
+              <select id="idPlanteCreate" formControlName="idPlante" class="form-control">
+                <option value="">Sélectionnez une plante</option>
+                <option *ngFor="let plante of plantes" [value]="plante._id">{{ plante.nom }}</option>
+              </select>
+              <div *ngIf="createProgrammeForm.get('idPlante')?.invalid && createProgrammeForm.get('idPlante')?.touched" class="invalid-feedback">
+                La sélection d'une plante est obligatoire.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="createProgrammeForm.invalid">Créer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
