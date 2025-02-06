@@ -42,7 +42,7 @@ export class UserListComponent implements OnInit {
   usersWithRFID: number = 0;
   showEditModal: boolean = false;
   selectedUser: any = null;
-  showAssignationModal = false;
+  showAssignationModal: boolean = false;
   selectedUserForAssignation: {
     _id: string;
     nom: string;

@@ -6,14 +6,12 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service'; // Assurez-vous que le chemin est correct
 
 @Component({
   selector: 'app-assignation',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule],
   templateUrl: './assignation.component.html',
   styleUrls: ['./assignation.component.css'],
 })

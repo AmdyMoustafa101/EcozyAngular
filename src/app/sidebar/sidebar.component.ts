@@ -10,7 +10,8 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
-  user: { nom: string; prenom: string; photo: string } | null = null;
+  user: { nom: string; prenom: string; photo: string; role: string } | null =
+    null;
 
   ngOnInit(): void {
     const userData = localStorage.getItem('user');
@@ -24,5 +25,9 @@ export class SidebarComponent implements OnInit {
     localStorage.removeItem('user');
     // Rediriger vers la page de connexion ou une autre page après la déconnexion
     window.location.href = '/login';
+  }
+
+  isAdmin(): boolean {
+    return this.user?.role === 'admin';
   }
 }

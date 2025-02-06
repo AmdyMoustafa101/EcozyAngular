@@ -1,77 +1,49 @@
-<div class="modal-backdrop fade show"></div>
-<div
-  class="modal fade show d-block"
-  tabindex="-1"
-  role="dialog"
-  aria-modal="true"
->
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-green-600 text-white p-4">
-        <h5 class="modal-title">Assigner une Carte RFID</h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          (click)="closeModal.emit()"
-          aria-label="Fermer"
-        ></button>
+<div class="modal-overlay" *ngIf="user">
+  <div class="container">
+    <h2>Assigner une Carte RFID</h2>
+    <form>
+      <!-- Prénom -->
+      <div class="form-group">
+        <label for="prenom">
+          Prénom
+          <span>*</span>
+        </label>
+        <input id="prenom" type="text" [value]="user.prenom" readonly />
       </div>
-      <div class="modal-body p-4">
-        <form>
-          <div class="mb-4">
-            <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              for="prenom"
-            >
-              Prénom <span class="text-red-500">*</span>
-            </label>
-            <input
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="prenom"
-              type="text"
-              [value]="user?.prenom"
-              readonly
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="nom">
-              Nom <span class="text-red-500">*</span>
-            </label>
-            <input
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="nom"
-              type="text"
-              [value]="user?.nom"
-              readonly
-            />
-          </div>
-          <div class="mb-6">
-            <label
-              class="block text-gray-700 text-sm font-bold mb-2"
-              for="rfid"
-            >
-              Scanner la carte RFID <span class="text-red-500">*</span>
-            </label>
-            <input
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="rfid"
-              type="text"
-              placeholder="Scanner la carte RFID"
-              [value]="rfidValue"
-              readonly
-            />
-          </div>
-          <div class="flex items-center justify-center">
-            <button
-              class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
-              (click)="assignCard()"
-            >
-              Assigner
-            </button>
-          </div>
-        </form>
+
+      <!-- Nom -->
+      <div class="form-group">
+        <label for="nom">
+          Nom
+          <span>*</span>
+        </label>
+        <input id="nom" type="text" [value]="user.nom" readonly />
       </div>
-    </div>
+
+      <!-- Scanner la carte RFID -->
+      <div class="form-group">
+        <label for="rfid">
+          Scanner la carte RFID
+          <span>*</span>
+        </label>
+        <input
+          id="rfid"
+          type="text"
+          placeholder="Scanner la carte RFID"
+          [value]="rfidValue"
+          readonly
+        />
+      </div>
+
+      <!-- Boutons -->
+      <div class="form-group">
+        <button type="button" class="cancel-btn" (click)="closeModal.emit()">
+          Annuler
+        </button>
+        <button type="button" class="submit-btn" (click)="assignCard()">
+          Assigner
+        </button>
+      </div>
+    </form>
   </div>
 </div>
