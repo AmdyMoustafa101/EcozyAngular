@@ -10,6 +10,7 @@ import {
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-add-user',
@@ -24,7 +25,15 @@ export class AddUserComponent {
   errorMessage: string = '';
   selectedFile: File | null = null;
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  user:  {
+    id: string,
+    role: string,
+    nom: string,
+    prenom: string,
+    photo: string,
+  } | null = null;
+
+  constructor(private fb: FormBuilder, private userService: UserService, private loggingService: LoggingService) {
     this.userForm = this.fb.group({
       nom: [
         '',
@@ -49,7 +58,12 @@ export class AddUserComponent {
   isModalOpen = false;
   photoPreview: string | ArrayBuffer | null = null;
 
-  // ... le reste du code existant ...
+  ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+    }
+  }
 
   // Ajoutez ces méthodes
   openModal() {
@@ -91,6 +105,9 @@ export class AddUserComponent {
 
       this.userService.createUser(formData).subscribe({
         next: (res) => {
+          if (this.user != null) {
+            this.loggingService.logAction(this.user.id, 'create', 'user', res.user._id, 'Création de l\'utilisateur');
+          } 
           // Accéder au codeSecret à partir de l'objet user renvoyé
           const codeSecret = res.user.codeSecret;
 
@@ -100,7 +117,10 @@ export class AddUserComponent {
             icon: 'success',
             confirmButtonText: 'OK',
           });
+
+          window.location.reload();
           this.userForm.reset();
+          this.closeModal();
           this.selectedFile = null; // Réinitialiser le fichier sélectionné
         },
         error: (err) => {

@@ -5,9 +5,9 @@
         <div class="stat-icon">
           <i class="fas fa-history"></i>
         </div>
-        <div class="stat-value">{{ totalEvenements }}</div>
+        <div class="stat-value">{{ connexion }}</div>
       </div>
-      <div class="stat-label">Total Événements</div>
+      <div class="stat-label">Totals Connexions</div>
     </div>
     <div class="divider"></div>
     <div class="stat">
@@ -15,9 +15,9 @@
         <div class="stat-icon">
           <i class="fas fa-bolt"></i>
         </div>
-        <div class="stat-value">{{ evenementsImmediat }}</div>
+        <div class="stat-value">{{ creation }}</div>
       </div>
-      <div class="stat-label">Arrosages Immédiats</div>
+      <div class="stat-label">Creations </div>
     </div>
     <div class="divider"></div>
     <div class="stat">
@@ -25,77 +25,64 @@
         <div class="stat-icon">
           <i class="fas fa-calendar-alt"></i>
         </div>
-        <div class="stat-value">{{ evenementsProgrammes }}</div>
+        <div class="stat-value">{{ suppression }}</div>
       </div>
-      <div class="stat-label">Arrosages Programmés</div>
+      <div class="stat-label">Suppressions</div>
     </div>
   </div>
 
-  <div class="header">
-    <h2 class="title">Historique d'Arrosage</h2>
-  </div>
-
-  <div class="filters">
+  <div class="filters mt-4">
     <input
       type="text"
-      placeholder="Rechercher..."
-      class="filter-input"
-      (input)="filtrerEvenements($event)"
+      placeholder="Rechercher par nom, prénom, téléphone..."
+      class="filter-input mb-2"
+      [(ngModel)]="searchTerm"
+      (input)="filtrerLogs()"
     />
-    <select class="filter-select" (change)="filtrerParType($event)">
-      <option value="">Tous les Types</option>
-      <option value="Immediat">Immédiat</option>
-      <option value="Programme">Programmé</option>
-    </select>
+    <input
+      type="date"
+      placeholder="Filtrer par date..."
+      class="filter-input mb-2"
+      [(ngModel)]="dateFilter"
+      (input)="filtrerLogs()"
+    />
   </div>
 
-  <table class="event-table">
-    <thead>
-      <tr class="table-header">
-        <th class="table-cell">Plante</th>
-        <th class="table-cell">Type</th>
-        <th class="table-cell">Date</th>
-        <th class="table-cell">Utilisateur</th>
-        <th class="table-cell">Statut</th>
-        <th class="table-cell">Détails</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let event of evenementsFiltres" class="table-row">
-        <td class="table-cell">{{ event.nomPlante }}</td>
-        <td class="table-cell">
-          <span
-            class="badge"
-            [ngClass]="{
-              'badge-programme': event.typeArrosage === 'Programme',
-              'badge-immediat': event.typeArrosage === 'Immediat'
-            }"
-          >
-            {{ event.typeArrosage }}
-          </span>
-        </td>
-        <td class="table-cell">
-          {{ event.horodatage | date : "medium" }}
-        </td>
-        <td class="table-cell">{{ event.user }}</td>
-        <td class="table-cell">
-          <span
-            class="badge"
-            [ngClass]="{
-              'badge-termine': event.statut === 'Termine',
-              'badge-encours': event.statut === 'EnCours',
-              'badge-enattente': event.statut === 'EnAttente'
-            }"
-          >
-            {{ event.statut }}
-          </span>
-        </td>
-        <td class="table-cell">
-          <button class="details-button" (click)="afficherDetails(event)">
-            Détails
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="user-logs mt-4">
+    <h3 class="title">Historiques des Actions</h3>
+    <table class="event-table">
+      <thead>
+        <tr class="table-header">
+          <th class="table-cell">#</th>
+          <th class="table-cell">Photo</th>
+          <th class="table-cell">Prénom</th>
+          <th class="table-cell">Nom</th>
+          <th class="table-cell">Téléphone</th>
+          <th class="table-cell">Heure de Connexion</th>
+          <th class="table-cell">Heure de Déconnexion</th>
+          <th class="table-cell">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let log of filteredLogs">
+          <tr class="table-row">
+            <td></td>
+            <td class="table-cell">
+              <img [src]="'http://localhost:3500/' + getUserDetails(log.userId)?.photo" alt="Photo de l'utilisateur" width="50" class="rounded-circle">
+            </td>
+            <td class="table-cell">{{ getUserDetails(log.userId)?.prenom }}</td>
+            <td class="table-cell">{{ getUserDetails(log.userId)?.nom }}</td>
+            <td class="table-cell">{{ getUserDetails(log.userId)?.telephone }}</td>
+            <td class="table-cell">{{ log.loginTime | date : "dd MMMM yyyy, HH:mm:ss" }}</td>
+            <td class="table-cell">{{ log.logoutTime | date : "dd MMMM yyyy, HH:mm:ss" }}</td>
+            <td class="table-cell">
+              <button class="edit-button" (click)="navigateToDetails(log)">
+                Détails
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
 </div>

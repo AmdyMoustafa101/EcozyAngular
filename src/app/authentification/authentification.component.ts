@@ -13,6 +13,7 @@ import { AuthServiceService } from '../services/auth-service.service';
 import Swal from 'sweetalert2';
 import { WebsocketService } from '../services/websocket.service';
 import { Subscription } from 'rxjs';
+import { LoggingService } from '../services/logging.service';
 
 @Component({
   selector: 'app-authentification',
@@ -36,7 +37,8 @@ export class AuthentificationComponent
   constructor(
     private router: Router,
     private authService: AuthServiceService,
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private loggingService: LoggingService
   ) {}
 
   ngOnInit(): void {
@@ -139,6 +141,7 @@ export class AuthentificationComponent
         if (response.message) {
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.user));
+          this.loggingService.logLogin(response.user.id);
           this.router.navigate(['/dashboard']);
         } else {
           this.handleInvalidCode();
@@ -161,6 +164,7 @@ export class AuthentificationComponent
     this.authService.loginWithRfid(this.rfidValue).subscribe({
       next: (response: any) => {
         if (response.message) {
+
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.user));
           this.router.navigate(['/dashboard']);

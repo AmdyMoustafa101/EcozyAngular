@@ -153,17 +153,20 @@
   color: #b91c1c;
 }
 
-/* Button styles */
-.details-button {
+.edit-button,
+.delete-button {
   padding: 0.25rem 0.5rem;
-  border: 1px solid #48bb78;
+  border: none;
   border-radius: 0.5rem;
-  background-color: #d1fae5;
-  color: #10b981;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.details-button:hover {
+.edit-button {
+  background-color: #d1fae5;
+  color: #10b981;
+}
+
+.edit-button:hover {
   background-color: #a3e6bf;
 }

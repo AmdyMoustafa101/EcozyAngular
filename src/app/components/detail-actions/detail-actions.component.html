@@ -1,0 +1,98 @@
+
+<div class="container mt-4">
+  <div class="filters mb-3">
+    <input
+      type="text"
+      placeholder="Recherche par type d'action..."
+      class="filter-input"
+      [(ngModel)]="actionTypeFilter"
+      (input)="filterActions()"
+    />
+    <input
+      type="text"
+      placeholder="Rechercher par entité..."
+      class="filter-input"
+      [(ngModel)]="searchTerm"
+      (input)="filterActions()"
+    />
+    <input
+      type="date"
+      placeholder="Filtrer par date..."
+      class="filter-input"
+      [(ngModel)]="dateFilter"
+      (input)="filterActions()"
+    />
+  </div>
+
+  <table class="event-table">
+    <thead>
+      <tr class="table-header">
+        <th class="table-cell">#</th>
+        <th class="table-cell">Type</th>
+        <th class="table-cell">Entité</th>
+        <th class="table-cell">Description</th>
+        <th class="table-cell">Date</th>
+        <th class="table-cell">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let action of paginatedActions" class="table-row">
+        <td></td>
+        <td class="table-cell">{{ action.type }}</td>
+        <td class="table-cell">{{ action.entity }}</td>
+        <td class="table-cell">{{ action.details }}</td>
+        <td class="table-cell">{{ action.timestamp | date : "dd MMMM yyyy, HH:mm:ss" }}</td>
+        <td class="table-cell">
+          <button class="edit-button" (click)="navigateToActionDetails(action.entity, action.entityId)">
+            Entité
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <nav class="pagination">
+    <ul>
+      <li [class.disabled]="currentPage === 1">
+        <a (click)="prevPage()" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li>
+        <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+      </li>
+      <li [class.disabled]="currentPage === totalPages">
+        <a (click)="nextPage()" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <button class="delete-button mt-3" (click)="navigateBack()">Retour</button>
+</div>
+
+<!-- Modal for User -->
+<div *ngIf="isModalOpenUser" class="modal-overlay" (click)="closeModalUser()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Detail de l'Entité</h2>
+    <div>
+      <p>Nom: {{ selectedEntity.prenom }}</p>
+      <p>Prénom: {{ selectedEntity.nom }}</p>
+      <p>Téléphone: {{ selectedEntity.telephone }}</p>
+    </div>
+    <button class="delete-button" (click)="closeModalUser()">Close</button>
+  </div>
+</div>
+
+<!-- Modal for Plant -->
+<div *ngIf="isModalOpenPlant" class="modal-overlay" (click)="closeModalPlant()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2>Detail de l'Entité</h2>
+    <div>
+      <p>Nom: {{ selectedEntity.nom }}</p>
+      <p>Type d'Arrosage: {{ selectedEntity.typeArrosage }}</p>
+    </div>
+    <button class="delete-button" (click)="closeModalPlant()">Close</button>
+  </div>
+</div>

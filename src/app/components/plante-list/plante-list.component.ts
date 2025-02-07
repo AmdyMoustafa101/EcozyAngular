@@ -11,6 +11,7 @@ import {
 import Swal from 'sweetalert2';
 import { CreatePlanteComponent } from '../create-plante/create-plante.component';
 import { EditPlanteComponent } from '../edit-plante/edit-plante.component';
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-plante-list',
@@ -40,12 +41,26 @@ export class PlanteListComponent implements OnInit {
   plantesHumidite: number = 0;
   plantesPeriode: number = 0;
 
+  user:  {  
+    id: string,
+    role: string,
+    nom: string,
+    prenom: string,
+    photo: string,
+  } | null = null;
+
   @ViewChild('createPlanteModal') createPlanteModal!: CreatePlanteComponent;
   @ViewChild('editPlanteModal') editPlanteModal!: EditPlanteComponent;
 
-  constructor(private planteService: PlanteService, private fb: FormBuilder) {}
+  constructor(private planteService: PlanteService, private fb: FormBuilder, private loggingService: LoggingService) {}
 
   ngOnInit(): void {
+
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+    }
+
     this.loadPlantes();
   }
 
@@ -137,6 +152,7 @@ export class PlanteListComponent implements OnInit {
   }
 
   deletePlante(planteId: string): void {
+
     Swal.fire({
       title: 'Êtes-vous sûr ?',
       text: 'Voulez-vous vraiment supprimer cette plante ?',
@@ -150,6 +166,11 @@ export class PlanteListComponent implements OnInit {
       if (result.isConfirmed) {
         this.planteService.deletePlante(planteId).subscribe({
           next: () => {
+
+            if(this.user != null ){
+              this.loggingService.logAction(this.user.id, 'delete', 'plante', planteId, 'Plante supprimée');
+            }
+
             this.plantes = this.plantes.filter(
               (plante) => plante._id !== planteId
             );

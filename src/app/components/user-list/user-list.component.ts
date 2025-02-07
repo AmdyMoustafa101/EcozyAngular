@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
 import { AssignationComponent } from '../assignation/assignation.component';
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-user-list',
@@ -49,13 +50,25 @@ export class UserListComponent implements OnInit {
     prenom: string;
   } | null = null;
 
+  userConnect:  {
+    id: string;
+    role: string;
+    nom: string;
+    prenom: string;
+    photo: string;
+  } | null = null;
+
   @ViewChild('addUserModal') addUserModal!: AddUserComponent;
   @ViewChild('editUserModal') editUserModal!: EditUserComponent;
   @ViewChild('assignationModal') assignationModal!: AssignationComponent;
 
-  constructor(private userService: UserService, private fb: FormBuilder) {}
+  constructor(private userService: UserService, private fb: FormBuilder, private loggingService: LoggingService) {}
 
   ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.userConnect = JSON.parse(userData);
+    }
     this.loadUsers();
   }
 
@@ -73,6 +86,7 @@ export class UserListComponent implements OnInit {
   }
   closeAddUserModal() {
     this.addUserModal.closeModal();
+    
   }
 
   openUserDetailsModal(user: any): void {
@@ -202,6 +216,11 @@ export class UserListComponent implements OnInit {
 
         archiveObservable.subscribe({
           next: () => {
+
+            if(this.userConnect != null ){
+              this.loggingService.logAction(this.userConnect.id, 'archive', 'user', userId, `Utilisateur ${action}`);
+            }
+
             user.archived = !user.archived;
             this.applyFilters();
             Swal.fire({
@@ -249,6 +268,14 @@ export class UserListComponent implements OnInit {
               }
               return user;
             });
+
+            if(this.userConnect != null ){
+              this.selectedUsers.forEach((userId) => {
+                if (this.userConnect?.id) {
+                  this.loggingService.logAction(this.userConnect.id, 'archive', 'user', userId, 'Utilisateur archivé');
+                }
+              });
+            }
 
             this.selectedUsers.clear();
             this.applyFilters();

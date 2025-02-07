@@ -10,6 +10,7 @@ import {
 import { PlanteService } from '../../services/plante.service';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-edit-plante',
@@ -26,7 +27,15 @@ export class EditPlanteComponent implements OnInit {
   typeArrosageOptions = ['humidité', 'période'];
   heuresSelectionnees: string[] = []; // Pour stocker les heures sélectionnées
 
-  constructor(private fb: FormBuilder, private planteService: PlanteService) {
+  user:  {  
+    id: string,
+    role: string,
+    nom: string,
+    prenom: string,
+    photo: string,
+  } | null = null;
+
+  constructor(private fb: FormBuilder, private planteService: PlanteService, private loggingService: LoggingService) {
     this.editPlanteForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
       besoinEau: ['', [Validators.required, Validators.min(0)]],
@@ -38,6 +47,11 @@ export class EditPlanteComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+    }
+
     if (this.plante) {
       this.editPlanteForm.patchValue({
         nom: this.plante.nom,
@@ -133,6 +147,11 @@ export class EditPlanteComponent implements OnInit {
 
     this.planteService.updatePlante(this.plante._id, planteData).subscribe({
       next: (res) => {
+
+        if(this.user != null) {
+          this.loggingService.logAction(this.user.id, 'update', 'plante', this.plante._id, `Mise à jour de la plante ${this.plante.nom}`);
+
+        }
         this.planteUpdated.emit(res.plante);
         this.closeModal.emit();
         Swal.fire(

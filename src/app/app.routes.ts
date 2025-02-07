@@ -5,6 +5,7 @@ import { PlanteListComponent } from './components/plante-list/plante-list.compon
 import { LayoutComponent } from './layout/layout.component';
 import { DashboardComponent } from './dashboard/dashboard/dashboard.component';
 import { HistoriqueComponent } from './components/historique/historique.component';
+import { DetailActionsComponent } from './components/detail-actions/detail-actions.component';
 
 export const routes: Routes = [
   {
@@ -16,6 +17,7 @@ export const routes: Routes = [
       { path: 'plantes', component: PlanteListComponent },
       { path: 'new-plante', component: CreatePlanteComponent },
       { path: 'historique', component: HistoriqueComponent },
+      { path: 'details/:userId/:entityId/:date', component: DetailActionsComponent },
     ],
   },
   {

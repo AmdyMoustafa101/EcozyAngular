@@ -9,6 +9,7 @@ import {
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service'; // Assurez-vous que le chemin est correct
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-assignation',
@@ -24,9 +25,23 @@ export class AssignationComponent implements OnInit, OnDestroy {
   rfidValue: string = '';
   private socket!: WebSocket;
 
-  constructor(private userService: UserService) {}
+  userConnect:  {
+    id: string,
+    role: string,
+    nom: string,
+    prenom: string,
+    photo: string,
+  } | null = null;
+
+  constructor(private userService: UserService, private loggingService: LoggingService) {}
 
   ngOnInit(): void {
+
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.userConnect = JSON.parse(userData);
+    }
+
     this.socket = new WebSocket('ws://localhost:8000');
 
     this.socket.onmessage = (event) => {
@@ -58,6 +73,13 @@ export class AssignationComponent implements OnInit, OnDestroy {
         .subscribe(
           (response) => {
             console.log('Carte RFID assignée avec succès', response);
+            if (this.userConnect != null && this.user != null) {
+              this.loggingService.logAction(this.userConnect.id, 'assignation', 'user', this.user._id, `Assignation de la carte RFID ${this.rfidValue}`);
+            } 
+            
+            // Fermeture du modal
+            
+            window.location.reload();
             this.closeModal.emit();
           },
           (error) => {

@@ -48,6 +48,11 @@ export class UserService {
     });
   }
 
+  // Récupérer un utilisateur
+  getUser(userId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${userId}`);
+  }
+
   // Mettre à jour un utilisateur
   updateUser(userId: string, formData: FormData): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${userId}`, formData);

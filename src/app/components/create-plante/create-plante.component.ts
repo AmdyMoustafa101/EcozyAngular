@@ -10,6 +10,7 @@ import { PlanteService } from '../../services/plante.service';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LoggingService } from '../../services/logging.service';
 
 @Component({
   selector: 'app-create-plante',
@@ -23,7 +24,15 @@ export class CreatePlanteComponent implements OnInit {
   typeArrosageOptions = ['humidité', 'période'];
   isModalOpen = true;
 
-  constructor(private fb: FormBuilder, private planteService: PlanteService) {
+  user:  {
+    id: string,
+    role: string,
+    nom: string,
+    prenom: string,
+    photo: string,
+  } | null = null;
+
+  constructor(private fb: FormBuilder, private planteService: PlanteService, private loggingService: LoggingService) {
     this.planteForm = this.fb.group({
       nom: ['', [Validators.required, Validators.minLength(2)]],
       besoinEau: ['', [Validators.required, Validators.min(0)]],
@@ -42,7 +51,12 @@ export class CreatePlanteComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+    }
+  }
 
   updateFormControls(typeArrosage: string): void {
     if (typeArrosage === 'humidité') {
@@ -110,8 +124,14 @@ export class CreatePlanteComponent implements OnInit {
 
     this.planteService.createPlante(planteData).subscribe({
       next: (res) => {
+        if (this.user != null && this.user != null) {
+          this.loggingService.logAction(this.user.id, 'create', 'plante', res.plante._id, 'Création de la plante');
+        } 
         Swal.fire('Succès', 'Plante créée avec succès!', 'success');
+        console.log(res);
         this.planteForm.reset();
+        window.location.reload();
+        this.closeModal();
       },
       error: (err) => {
         Swal.fire(
