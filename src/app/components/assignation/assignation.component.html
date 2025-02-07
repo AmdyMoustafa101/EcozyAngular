@@ -35,6 +35,11 @@
         />
       </div>
 
+      <!-- Message d'erreur -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <!-- Boutons -->
       <div class="form-group">
         <button type="button" class="cancel-btn" (click)="closeModal.emit()">

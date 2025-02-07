@@ -57,4 +57,9 @@ export class UserService {
   assignRfidToUser(userId: string, carteRFID: string): Observable<any> {
     return this.http.post(this.assignRfidUrl, { userId, carteRFID });
   }
+
+  // Désassigner une carte RFID d'un utilisateur
+  removeCardFromUser(userId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${userId}/remove-card`, {});
+  }
 }

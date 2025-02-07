@@ -1,10 +1,11 @@
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { addWeeks, startOfWeek, format, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { CommonModule } from '@angular/common';
 import { CircularGaugeComponent } from '../circular-gauge/circular-gauge.component';
 import { ArrosageModalComponent } from '../arrosage-modal/arrosage-modal.component';
+import { SensorService } from '../../services/sensor.service';
 
 Chart.register(...registerables);
 
@@ -14,12 +15,15 @@ Chart.register(...registerables);
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, OnInit {
   chart: any;
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
   isArrosageModalOpen = false;
-  constructor() {
+  humidity = 0;
+  brightness = 0;
+
+  constructor(private sensorService: SensorService) {
     this.updateWeekDates();
   }
 
@@ -35,6 +39,10 @@ export class DashboardComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.createChart();
+  }
+
+  ngOnInit() {
+    this.fetchSensorData();
   }
 
   updateWeekDates() {
@@ -81,21 +89,25 @@ export class DashboardComponent implements AfterViewInit {
       datasets: [
         {
           label: 'Humidité',
-          data: Array.from({ length: 7 }, () =>
-            Math.floor(Math.random() * 100)
-          ),
+          data: Array.from({ length: 7 }, () => this.humidity),
           borderColor: '#4CAF50',
           tension: 0.4,
         },
         {
           label: 'Luminosité',
-          data: Array.from({ length: 7 }, () =>
-            Math.floor(Math.random() * 100)
-          ),
+          data: Array.from({ length: 7 }, () => this.brightness),
           borderColor: '#FFC107',
           tension: 0.4,
         },
       ],
     };
+  }
+
+  fetchSensorData() {
+    this.sensorService.getSensorData().subscribe((data) => {
+      this.humidity = data.humidity;
+      this.brightness = data.brightness;
+      this.updateChart();
+    });
   }
 }

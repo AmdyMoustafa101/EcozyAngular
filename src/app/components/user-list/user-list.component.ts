@@ -67,12 +67,14 @@ export class UserListComponent implements OnInit {
   closeAssignationModal() {
     this.showAssignationModal = false;
     this.selectedUserForAssignation = null;
+    this.loadUsers();
   }
   openAddUserModal() {
     this.addUserModal.openModal();
   }
   closeAddUserModal() {
     this.addUserModal.closeModal();
+    this.loadUsers();
   }
 
   openUserDetailsModal(user: any): void {
@@ -81,6 +83,7 @@ export class UserListComponent implements OnInit {
 
   closeUserDetailsModal(): void {
     this.selectedUserDetails = null;
+    this.loadUsers();
   }
 
   loadUsers(): void {
@@ -108,6 +111,7 @@ export class UserListComponent implements OnInit {
   closeEditModal(): void {
     this.showEditModal = false;
     this.selectedUser = null;
+    this.loadUsers();
   }
 
   onUserUpdated(updatedUser: any): void {
@@ -269,6 +273,42 @@ export class UserListComponent implements OnInit {
               confirmButtonColor: '#3085d6',
             });
           });
+      }
+    });
+  }
+  removeAssignation(user: any): void {
+    Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: 'Voulez-vous vraiment désassigner la carte de cet utilisateur ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Oui, désassigner !',
+      cancelButtonText: 'Annuler',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.removeCardFromUser(user._id).subscribe({
+          next: () => {
+            user.carteRFID = null;
+            this.applyFilters();
+            Swal.fire({
+              title: 'Succès !',
+              text: 'La carte a été désassignée avec succès.',
+              icon: 'success',
+              confirmButtonColor: '#3085d6',
+            });
+          },
+          error: (err) => {
+            console.error('Erreur lors de la désassignation de la carte', err);
+            Swal.fire({
+              title: 'Erreur !',
+              text: "Une erreur s'est produite lors de la désassignation de la carte.",
+              icon: 'error',
+              confirmButtonColor: '#3085d6',
+            });
+          },
+        });
       }
     });
   }

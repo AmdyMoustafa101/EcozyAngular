@@ -135,9 +135,14 @@
         </td>
         <td class="table-cell">{{ user.telephone }}</td>
         <td class="table-cell">
-          <span *ngIf="user.carteRFID; else assignButton">{{
-            user.carteRFID
-          }}</span>
+          <span *ngIf="user.carteRFID; else assignButton">
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="removeAssignation(user)"
+            >
+              <i class="fas fa-id-card"></i> Désassigner
+            </button>
+          </span>
           <ng-template #assignButton>
             <button
               class="btn btn-sm btn-outline-primary"
@@ -147,6 +152,7 @@
             </button>
           </ng-template>
         </td>
+
         <td class="table-cell">
           <span
             class="badge"
