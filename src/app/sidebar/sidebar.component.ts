@@ -11,7 +11,7 @@ import { LoggingService } from '../services/logging.service';
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
-  user: { id: string, nom: string; prenom: string; photo: string } | null = null;
+  user: { id: string, nom: string; prenom: string; photo: string, role: string } | null = null;
 
   constructor(
     private loggingService: LoggingService,
@@ -34,5 +34,10 @@ export class SidebarComponent implements OnInit {
       window.location.href = '/login';
     }
     
+  }
+  
+
+  isAdmin(): boolean {
+    return this.user?.role === 'admin';
   }
 }

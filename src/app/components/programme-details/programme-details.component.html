@@ -1,0 +1,40 @@
+<div class="modal fade" [ngClass]="{'show': isOpen}" tabindex="-1" aria-labelledby="programmeDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="programmeDetailsModalLabel">
+          <i class="fas fa-info-circle"></i> Détails du programme en cours
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="programme; else noProgramme">
+        <p><strong>Nom de la plante:</strong> {{ programme?.nomPlante }}</p>
+        <p><strong>Date de début:</strong> {{ programme?.dateDebut | date }}</p>
+        <p><strong>Date de fin:</strong> {{ programme?.dateFin | date }}</p>
+        <p><strong>État:</strong> {{ programme?.etat ? 'Actif' : 'Inactif' }}</p>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" [(ngModel)]="programme.etat" (change)="toggleEtat()" id="etatSwitch" />
+          <label class="form-check-label" for="etatSwitch">{{ programme?.etat ? 'Actif' : 'Inactif' }}</label>
+        </div>
+      </div>
+      <ng-template #noProgramme>
+        <p>Aucun programme en cours.</p>
+      </ng-template>
+      <div class="modal-footer" *ngIf="programme">
+        <button type="button" class="submit-btn" (click)="openModifierModal()">
+          <i class="fas fa-edit"></i> Modifier
+        </button>
+        <button type="button" class="cancel-btn" (click)="supprimerProgramme()">
+          <i class="fas fa-trash-alt"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inclure le composant modal ici -->
+<app-modifier-programme-modal
+  #modifierProgrammeModal
+  [programme]="programme"
+  (programmeModifie)="onProgrammeModifie($event)">
+</app-modifier-programme-modal>

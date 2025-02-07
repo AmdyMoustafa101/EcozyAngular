@@ -3,13 +3,21 @@
     <h1>Dashboard</h1>
     <div class="actions">
       <button class="btn-primary">Arroser Maintenant</button>
-      <button class="btn-secondary" (click)="openArrosageModal()">
+      <button class="btn-secondary" *ngIf="!programmeEnCours" (click)="openArrosageModal()">
         Programmer un arrosage
+      </button>
+      <button class="btn-secondary" *ngIf="programmeEnCours" (click)="openProgrammeDetails()">
+        Voir programme en cours
       </button>
     </div>
   </div>
 
   <!-- Autres éléments du dashboard -->
+
+    <app-programme-details
+    #programmeDetailsModal
+    [programme]="programmeEnCours">
+  </app-programme-details>
 
   <app-arrosage-modal
     #arrosageModal
@@ -23,12 +31,12 @@
       color="#4CAF50"
     ></app-circular-gauge>
     <app-circular-gauge
-      [value]="40"
+      [value]="10"
       title="Luminosité"
       color="#FFC107"
     ></app-circular-gauge>
     <app-circular-gauge
-      [value]="10"
+      [value]="20"
       title="Niveau d'eau"
       color="#2196F3"
     ></app-circular-gauge>

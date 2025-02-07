@@ -2,53 +2,39 @@
   <div class="container">
     <h2>Programmer une période d'arrosage</h2>
     <hr />
-    <form (ngSubmit)="onSubmit()">
+    <form [formGroup]="programmeForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="start-date">Date de début</label>
         <input
           type="date"
           id="start-date"
-          [(ngModel)]="startDate"
-          name="startDate"
+          formControlName="dateDebut"
           required
         />
+        <div *ngIf="programmeForm.get('dateDebut')?.hasError('invalidDateDebut')" class="error-message">
+          La date de début doit être égale ou postérieure à aujourd'hui.
+        </div>
       </div>
       <div class="form-group">
         <label for="end-date">Date de fin</label>
         <input
           type="date"
           id="end-date"
-          [(ngModel)]="endDate"
-          name="endDate"
+          formControlName="dateFin"
           required
         />
-      </div>
-      <div class="form-group">
-        <label for="first-time">1ère Heure</label>
-        <input
-          type="time"
-          id="first-time"
-          [(ngModel)]="firstTime"
-          name="firstTime"
-          required
-        />
-      </div>
-      <div class="form-group">
-        <label for="second-time">2ème Heure</label>
-        <input
-          type="time"
-          id="second-time"
-          [(ngModel)]="secondTime"
-          name="secondTime"
-          required
-        />
+        <div *ngIf="programmeForm.get('dateFin')?.hasError('invalidDateFin')" class="error-message">
+          La date de fin doit être postérieure à la date de début.
+        </div>
       </div>
       <div class="form-group">
         <label for="plant">Plante</label>
-        <input type="text" id="plant" value="Niébé" disabled />
+        <select id="plant" formControlName="idPlante" required>
+          <option *ngFor="let plante of plantes" [value]="plante._id">{{ plante.nom }}</option>
+        </select>
       </div>
       <div class="form-group">
-        <button type="submit">Enregistrer</button>
+        <button type="submit" [disabled]="programmeForm.invalid">Enregistrer</button>
         <button type="button" (click)="closeModal()">Annuler</button>
       </div>
     </form>

@@ -17,13 +17,13 @@
     <a routerLink="/dashboard" routerLinkActive="active">
       <i class="fas fa-home"></i> Dashboard
     </a>
-    <a routerLink="/users" routerLinkActive="active">
+    <a routerLink="/users" routerLinkActive="active" *ngIf="isAdmin()">
       <i class="fas fa-user"></i> Utilisateurs
     </a>
     <a routerLink="/plantes" routerLinkActive="active">
       <i class="fas fa-seedling"></i> Plantes
     </a>
-    <a routerLink="/historique" routerLinkActive="active">
+    <a routerLink="/historique" routerLinkActive="active" *ngIf="isAdmin()">
       <i class="fas fa-history"></i> Historiques
     </a>
   </div>
@@ -34,3 +34,4 @@
     DECONNEXION
   </a>
 </div>
+

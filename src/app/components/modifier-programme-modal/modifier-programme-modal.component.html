@@ -1,0 +1,39 @@
+<div class="modal fade" [ngClass]="{'show': isOpen}" tabindex="-1" aria-labelledby="modifierProgrammeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modifierProgrammeModalLabel">
+          <i class="fas fa-edit"></i> Modifier le programme
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="programmeForm; else noProgramme">
+        <form [formGroup]="programmeForm" (ngSubmit)="modifierProgramme()">
+          <div class="mb-3">
+            <label for="dateDebut" class="form-label">Date de début:</label>
+            <input type="date" class="form-control" id="dateDebut" formControlName="dateDebut" required>
+            <div *ngIf="programmeForm.get('dateDebut')?.invalid && programmeForm.get('dateDebut')?.touched" class="text-danger">
+              La date de début est obligatoire.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="dateFin" class="form-label">Date de fin:</label>
+            <input type="date" class="form-control" id="dateFin" formControlName="dateFin" required>
+            <div *ngIf="programmeForm.get('dateFin')?.invalid && programmeForm.get('dateFin')?.touched" class="text-danger">
+              La date de fin est obligatoire et doit être postérieure à la date de début.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="programmeForm.invalid">
+            <i class="fas fa-save"></i> Enregistrer
+          </button>
+        </form>
+      </div>
+      <ng-template #noProgramme>
+        <p>Aucun programme à modifier.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay pour assombrir l'arrière-plan -->
+<div class="modal-backdrop fade" [ngClass]="{'show': isOpen}" *ngIf="isOpen"></div>

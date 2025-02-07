@@ -5,12 +5,14 @@ import { fr } from 'date-fns/locale';
 import { CommonModule } from '@angular/common';
 import { CircularGaugeComponent } from '../circular-gauge/circular-gauge.component';
 import { ArrosageModalComponent } from '../arrosage-modal/arrosage-modal.component';
+import { ProgrammeDetailsComponent } from '../../components/programme-details/programme-details.component';
+import { ProgrammeArrosageService } from '../../services/programme-arrosage.service';
 
 Chart.register(...registerables);
 
 @Component({
   standalone: true,
-  imports: [CommonModule, CircularGaugeComponent, ArrosageModalComponent],
+  imports: [CommonModule, CircularGaugeComponent, ArrosageModalComponent, ProgrammeDetailsComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -19,11 +21,31 @@ export class DashboardComponent implements AfterViewInit {
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
   isArrosageModalOpen = false;
-  constructor() {
+
+  programmeEnCours: any = null;
+  showProgrammeDetails: boolean = false;
+
+  constructor(private programmeArrosageService: ProgrammeArrosageService) {
     this.updateWeekDates();
   }
 
   @ViewChild('arrosageModal') arrosageModal!: ArrosageModalComponent;
+  @ViewChild('programmeDetailsModal') programmeDetailsModal!: ProgrammeDetailsComponent;
+
+  ngOnInit() {
+    this.checkProgrammeEnCours();
+  }
+
+  checkProgrammeEnCours() {
+    this.programmeArrosageService.getProgrammeEnCours().subscribe(
+      (programme) => {
+        this.programmeEnCours = programme;
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération du programme en cours', error);
+      }
+    );
+  }
 
   openArrosageModal() {
     this.arrosageModal.openModal();
@@ -31,6 +53,11 @@ export class DashboardComponent implements AfterViewInit {
 
   onModalClose() {
     console.log('Modal fermé');
+    this.checkProgrammeEnCours(); // Vérifiez à nouveau après la fermeture du modal
+  }
+
+  openProgrammeDetails() {
+    this.programmeDetailsModal.openModal();
   }
 
   ngAfterViewInit() {
