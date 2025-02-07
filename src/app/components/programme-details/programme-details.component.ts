@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ProgrammeArrosageService } from '../../services/programme-arrosage.service';
 import { ModifierProgrammeModalComponent } from '../modifier-programme-modal/modifier-programme-modal.component';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2'; // Importer SweetAlert2
 
 @Component({
   selector: 'app-programme-details',
@@ -43,6 +44,7 @@ export class ProgrammeDetailsComponent implements AfterViewInit {
       this.programmeArrosageService.updateEtatProgramme(this.programme._id, this.programme.etat)
         .subscribe(() => {
           console.log('État mis à jour');
+          Swal.fire('État mis à jour', '', 'success');
         });
     }
   }
@@ -62,11 +64,28 @@ export class ProgrammeDetailsComponent implements AfterViewInit {
 
   supprimerProgramme() {
     if (this.programme) {
-      this.programmeArrosageService.deleteProgramme(this.programme._id)
-        .subscribe(() => {
-          console.log('Programme supprimé');
-          this.closeModal();
-        });
+      Swal.fire({
+        title: 'Êtes-vous sûr?',
+        text: 'Voulez-vous vraiment supprimer ce programme?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer!',
+        cancelButtonText: 'Annuler',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonAriaLabel: 'Confirmer la suppression',
+        cancelButtonAriaLabel: 'Annuler la suppression',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.programmeArrosageService.deleteProgramme(this.programme._id)
+            .subscribe(() => {
+              Swal.fire('Supprimé!', 'Le programme a été supprimé.', 'success');
+              this.closeModal();
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire('Annulé', 'La suppression a été annulée.', 'info');
+        }
+      });
     }
   }
 }
