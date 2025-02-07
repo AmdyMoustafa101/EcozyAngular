@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-authentification',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './authentification.component.html',
   styleUrls: ['./authentification.component.css'],

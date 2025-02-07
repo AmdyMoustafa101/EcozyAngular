@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import {
@@ -49,9 +49,9 @@ export class UserListComponent implements OnInit {
     prenom: string;
   } | null = null;
 
-  @ViewChild('addUserModal') addUserModal!: AddUserComponent;
-  @ViewChild('editUserModal') editUserModal!: EditUserComponent;
-  @ViewChild('assignationModal') assignationModal!: AssignationComponent;
+  readonly addUserModal = viewChild.required<AddUserComponent>('addUserModal');
+  readonly editUserModal = viewChild.required<EditUserComponent>('editUserModal');
+  readonly assignationModal = viewChild.required<AssignationComponent>('assignationModal');
 
   constructor(private userService: UserService, private fb: FormBuilder) {}
 
@@ -69,10 +69,10 @@ export class UserListComponent implements OnInit {
     this.selectedUserForAssignation = null;
   }
   openAddUserModal() {
-    this.addUserModal.openModal();
+    this.addUserModal().openModal();
   }
   closeAddUserModal() {
-    this.addUserModal.closeModal();
+    this.addUserModal().closeModal();
   }
 
   openUserDetailsModal(user: any): void {

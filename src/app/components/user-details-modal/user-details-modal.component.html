@@ -1,0 +1,69 @@
+<div class="modal fade" [ngClass]="{'show': isOpen}" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header" style="background-color: #8bc34a; color: white; padding: 1.5rem;">
+        <div class="d-flex align-items-center">
+          <h4 class="modal-title fw-bold mb-0">Profil Utilisateur</h4>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeModal()" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="row g-0">
+          <div class="col-md-4 bg-light position-relative text-center p-5">
+            <div class="position-absolute top-50 start-50 translate-middle text-center">
+              <div class="mb-4">
+                <img *ngIf="user?.photo" [src]="'http://localhost:3500/' + user.photo" alt="Photo de profil" class="img-fluid rounded-circle shadow" style="width: 200px; height: 200px; object-fit: cover;">
+                <div *ngIf="!user?.photo" class="rounded-circle bg-white shadow d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; margin: 0 auto;">
+                  <span class="text-muted">Aucune photo</span>
+                </div>
+              </div>
+              <div class="badge text-uppercase fs-6 mb-2" [ngClass]="user?.role === 'admin' ? 'bg-primary' : 'bg-secondary'">
+                {{ user?.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8 p-5">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label text-muted small text-uppercase">Nom</label>
+                  <div class="fs-5 fw-bold">{{ user?.nom }}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label text-muted small text-uppercase">Prénom</label>
+                  <div class="fs-5 fw-bold">{{ user?.prenom }}</div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="mb-3">
+                  <label class="form-label text-muted small text-uppercase">Téléphone</label>
+                  <div class="fs-5 fw-bold">{{ user?.telephone }}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label text-muted small text-uppercase">Code Secret</label>
+                  <div class="fs-5 fw-bold">{{ user?.codeSecret }}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label text-muted small text-uppercase">Carte RFID</label>
+                  <div class="fs-5 fw-bold">{{ user?.carteRFID || 'Non assignée' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 bg-light p-4">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay pour assombrir l'arrière-plan -->
+<div class="modal-backdrop fade" [ngClass]="{'show': isOpen}" *ngIf="isOpen"></div>
