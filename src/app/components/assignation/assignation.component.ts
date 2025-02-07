@@ -21,6 +21,7 @@ export class AssignationComponent implements OnInit, OnDestroy {
   @Output() closeModal = new EventEmitter<void>();
 
   rfidValue: string = '';
+  errorMessage: string = ''; // Ajout d'une propriété pour stocker le message d'erreur
   private socket!: WebSocket;
 
   userConnect:  {
@@ -66,6 +67,10 @@ export class AssignationComponent implements OnInit, OnDestroy {
 
   assignCard(): void {
     if (this.user && this.rfidValue) {
+      console.log('Assigning RFID:', {
+        userId: this.user._id,
+        carteRFID: this.rfidValue,
+      });
       this.userService
         .assignRfidToUser(this.user._id, this.rfidValue)
         .subscribe(
@@ -85,10 +90,20 @@ export class AssignationComponent implements OnInit, OnDestroy {
               "Erreur lors de l'assignation de la carte RFID",
               error
             );
+            if (error.status === 400 && error.error && error.error.message) {
+              // Vérifiez si le message d'erreur contient "déjà assignée"
+              if (error.error.message.includes('déjà assignée')) {
+                this.errorMessage = 'Carte déjà assignée';
+              } else {
+                this.errorMessage = error.error.message || 'Erreur inconnue';
+              }
+            } else {
+              this.errorMessage = 'Erreur inconnue';
+            }
           }
         );
     } else {
-      console.error('Utilisateur ou valeur RFID non valide');
+      this.errorMessage = 'Utilisateur ou valeur RFID non valide';
     }
   }
 }
