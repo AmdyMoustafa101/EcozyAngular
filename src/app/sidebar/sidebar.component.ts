@@ -1,21 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+<<<<<<< HEAD
 import { LoggingService } from '../services/logging.service';
+=======
+import { UserDetailsModalComponent } from "../components/user-details-modal/user-details-modal.component";
+>>>>>>> origin/testAmdy3
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, UserDetailsModalComponent],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
+<<<<<<< HEAD
   user: { id: string, nom: string; prenom: string; photo: string, role: string } | null = null;
 
   constructor(
     private loggingService: LoggingService,
   ) {}
+=======
+  @ViewChild('userDetailsModal') userDetailsModal!: UserDetailsModalComponent;
+  user: { nom: string; prenom: string; photo: string; role: string; codeSecret: string; telephone: string; carteRFID: string  } | null =
+    null;
+>>>>>>> origin/testAmdy3
+
+
 
   ngOnInit(): void {
     const userData = localStorage.getItem('user');
@@ -39,5 +51,16 @@ export class SidebarComponent implements OnInit {
 
   isAdmin(): boolean {
     return this.user?.role === 'admin';
+  }
+  openUserDetailsModal(): void {
+    if (this.userDetailsModal) {
+      this.userDetailsModal.openModal();
+    }
+  }
+
+  closeUserDetailsModal(): void {
+    if (this.userDetailsModal) {
+      this.userDetailsModal.closeModal();
+    }
   }
 }
