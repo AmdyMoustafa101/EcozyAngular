@@ -97,6 +97,7 @@ export class ProgrammeDetailsComponent implements AfterViewInit {
                 this.loggingService.logAction(this.userConnect.id, 'delete', 'programme', this.programme._id, 'Suppression du programme');
               }
               Swal.fire('Supprimé!', 'Le programme a été supprimé.', 'success');
+              window.location.reload();
               this.closeModal();
             });
         } else if (result.dismiss === Swal.DismissReason.cancel) {

@@ -104,33 +104,31 @@ export class ArrosageModalComponent implements OnInit{
 
     const programmeArrosage = this.programmeForm.value;
     this.http.post('http://localhost:3500/api/programme-arrosage', programmeArrosage).subscribe(
-      res => {
-        if(this.userConnect != null) {
-          const response: any = res;
-          this.loggingService.logAction(this.userConnect.id, 'create', 'programmation', response.programmeArrosage._id, 'Création d\'un programme d\'arrosage' );
-        }
-        // Afficher un message de succès
-      Swal.fire({
-        title: 'Succès !',
-        text: 'Le programme d\'arrosage a été créé avec succès.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      }).then(() => {
+      (res) => {
+          if(this.userConnect != null) {
+            const response: any = res;
+            console.log('Programme d\'arrosage créé avec succès', response);
+            this.loggingService.logAction(this.userConnect.id, 'create', 'programmation', response._id, 'Création d\'un programme d\'arrosage' );
+          }
+          // Afficher un message de succès
+          Swal.fire({
+            title: 'Succès !',
+            text: 'Le programme d\'arrosage a été créé avec succès.',
+            icon: 'success',
+      })
         window.location.reload();
-        this.closeModal(); // Fermer la modal après confirmation
-      });
         this.closeModal();
       },
-      error => {
+      (error) => {
         // Afficher un message d'erreur
-      Swal.fire({
-        title: 'Erreur !',
-        text: 'Un programme pour cette plante existe deja',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-        console.error('Erreur lors de la création du programme d\'arrosage', error);
-      }
+        Swal.fire({
+          title: 'Erreur !',
+          text: 'Un programme pour cette plante existe deja',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+          console.error('Erreur lors de la création du programme d\'arrosage', error);
+        }
     );
   }
   closeModal(): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, viewChild } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import {
@@ -50,7 +50,6 @@ export class UserListComponent implements OnInit {
     prenom: string;
   } | null = null;
 
-<<<<<<< HEAD
   userConnect:  {
     id: string;
     role: string;
@@ -62,11 +61,6 @@ export class UserListComponent implements OnInit {
   @ViewChild('addUserModal') addUserModal!: AddUserComponent;
   @ViewChild('editUserModal') editUserModal!: EditUserComponent;
   @ViewChild('assignationModal') assignationModal!: AssignationComponent;
-=======
-  readonly addUserModal = viewChild.required<AddUserComponent>('addUserModal');
-  readonly editUserModal = viewChild.required<EditUserComponent>('editUserModal');
-  readonly assignationModal = viewChild.required<AssignationComponent>('assignationModal');
->>>>>>> origin/testAmdy3
 
   constructor(private userService: UserService, private fb: FormBuilder, private loggingService: LoggingService) {}
 
@@ -89,15 +83,12 @@ export class UserListComponent implements OnInit {
     this.loadUsers();
   }
   openAddUserModal() {
-    this.addUserModal().openModal();
+    this.addUserModal.openModal();
   }
   closeAddUserModal() {
-<<<<<<< HEAD
     this.addUserModal.closeModal();
     this.loadUsers();
-=======
-    this.addUserModal().closeModal();
->>>>>>> origin/testAmdy3
+    this.addUserModal.closeModal();
   }
 
   openUserDetailsModal(user: any): void {

@@ -1,11 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-<<<<<<< HEAD
 import { LoggingService } from '../services/logging.service';
-=======
 import { UserDetailsModalComponent } from "../components/user-details-modal/user-details-modal.component";
->>>>>>> origin/testAmdy3
 
 @Component({
   selector: 'app-sidebar',
@@ -15,18 +12,15 @@ import { UserDetailsModalComponent } from "../components/user-details-modal/user
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit {
-<<<<<<< HEAD
+
   user: { id: string, nom: string; prenom: string; photo: string, role: string } | null = null;
 
   constructor(
     private loggingService: LoggingService,
   ) {}
-=======
-  @ViewChild('userDetailsModal') userDetailsModal!: UserDetailsModalComponent;
-  user: { nom: string; prenom: string; photo: string; role: string; codeSecret: string; telephone: string; carteRFID: string  } | null =
-    null;
->>>>>>> origin/testAmdy3
 
+  @ViewChild('userDetailsModal') userDetailsModal!: UserDetailsModalComponent;
+  
 
 
   ngOnInit(): void {
