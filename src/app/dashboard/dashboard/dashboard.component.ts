@@ -31,6 +31,7 @@ Chart.register(...registerables);
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
+  currentState: 'ON' | 'OFF' = 'OFF';
   chart: any;
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];

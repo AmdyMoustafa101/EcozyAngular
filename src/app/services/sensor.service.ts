@@ -7,6 +7,7 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root',
 })
 export class SensorService {
+  private apiUrl = 'http://localhost:3002/api';
   private apiUrl = 'http://localhost:3002/api/sensor-data';
   private averagesUrl = 'http://localhost:3002/api/averages';
   private socket: Socket;
@@ -27,7 +28,14 @@ export class SensorService {
   }
 
   getSensorData(): Observable<{ humidity: number; brightness: number }> {
-    return this.http.get<{ humidity: number; brightness: number }>(this.apiUrl);
+    return this.http.get<{ humidity: number; brightness: number }>(
+      `${this.apiUrl}/sensor-data`
+    );
+  }
+
+  arroser(command: any): Observable<any> {
+    console.log('command: ', command);
+    return this.http.post<any>(`${this.apiUrl}/control-pump`, { command });
   }
 
   onSensorData(): Observable<{ humidity: number; brightness: number }> {
