@@ -32,4 +32,10 @@ export class CircularGaugeComponent {
         return this.faTint;
     }
   }
+
+  getStrokeDasharray(): string {
+    const circumference = 2 * Math.PI * 54; // Circonférence du cercle
+    const progress = (this.value / 100) * circumference; // Calcul de la progression
+    return `${progress} ${circumference}`;
+  }
 }

@@ -1,4 +1,10 @@
-import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { addWeeks, startOfWeek, format, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -8,16 +14,23 @@ import { ArrosageModalComponent } from '../arrosage-modal/arrosage-modal.compone
 import { ProgrammeDetailsComponent } from '../../components/programme-details/programme-details.component';
 import { ProgrammeArrosageService } from '../../services/programme-arrosage.service';
 import { SensorService } from '../../services/sensor.service';
+import { AverageStoreService } from '../../services/average-store.service';
+import { Subscription } from 'rxjs';
 
 Chart.register(...registerables);
 
 @Component({
   standalone: true,
-  imports: [CommonModule, CircularGaugeComponent, ArrosageModalComponent, ProgrammeDetailsComponent],
+  imports: [
+    CommonModule,
+    CircularGaugeComponent,
+    ArrosageModalComponent,
+    ProgrammeDetailsComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements AfterViewInit, OnInit {
+export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   chart: any;
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
@@ -29,16 +42,57 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   humidity = 0;
   brightness = 0;
 
-  constructor(private programmeArrosageService: ProgrammeArrosageService, private sensorService: SensorService) {
+  humidityAverages: number[] = [];
+  brightnessAverages: number[] = [];
+
+  private sensorDataSubscription: Subscription | null = null;
+  private averagesSubscription: Subscription | null = null;
+
+  constructor(
+    private programmeArrosageService: ProgrammeArrosageService,
+    private sensorService: SensorService,
+    private averageStoreService: AverageStoreService
+  ) {
     this.updateWeekDates();
   }
 
   @ViewChild('arrosageModal') arrosageModal!: ArrosageModalComponent;
-  @ViewChild('programmeDetailsModal') programmeDetailsModal!: ProgrammeDetailsComponent;
+  @ViewChild('programmeDetailsModal')
+  programmeDetailsModal!: ProgrammeDetailsComponent;
 
   ngOnInit() {
     this.checkProgrammeEnCours();
     this.fetchSensorData();
+
+    this.averagesSubscription =
+      this.averageStoreService.humidityAverages$.subscribe((averages) => {
+        this.humidityAverages = averages;
+        this.updateChart();
+      });
+
+    this.averageStoreService.brightnessAverages$.subscribe((averages) => {
+      this.brightnessAverages = averages;
+      this.updateChart();
+    });
+
+    this.sensorDataSubscription = this.sensorService
+      .onSensorData()
+      .subscribe((data) => {
+        this.humidity = data.humidity;
+        this.brightness = data.brightness;
+        this.updateChart();
+      });
+
+    this.fetchAverages();
+  }
+
+  ngOnDestroy() {
+    if (this.sensorDataSubscription) {
+      this.sensorDataSubscription.unsubscribe();
+    }
+    if (this.averagesSubscription) {
+      this.averagesSubscription.unsubscribe();
+    }
   }
 
   checkProgrammeEnCours() {
@@ -47,7 +101,10 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         this.programmeEnCours = programme;
       },
       (error) => {
-        console.error('Erreur lors de la récupération du programme en cours', error);
+        console.error(
+          'Erreur lors de la récupération du programme en cours',
+          error
+        );
       }
     );
   }
@@ -57,8 +114,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   }
 
   onModalClose() {
-    console.log('Modal fermé');
-    this.checkProgrammeEnCours(); // Vérifiez à nouveau après la fermeture du modal
+    this.checkProgrammeEnCours();
   }
 
   openProgrammeDetails() {
@@ -68,8 +124,6 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.createChart();
   }
-
- 
 
   updateWeekDates() {
     const start = startOfWeek(this.currentDate, { locale: fr });
@@ -87,6 +141,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   changeWeek(weeks: number) {
     this.currentDate = addWeeks(this.currentDate, weeks);
     this.updateWeekDates();
+    this.fetchAverages();
     this.updateChart();
   }
 
@@ -115,13 +170,13 @@ export class DashboardComponent implements AfterViewInit, OnInit {
       datasets: [
         {
           label: 'Humidité',
-          data: Array.from({ length: 7 }, () => this.humidity),
+          data: this.humidityAverages,
           borderColor: '#4CAF50',
           tension: 0.4,
         },
         {
           label: 'Luminosité',
-          data: Array.from({ length: 7 }, () => this.brightness),
+          data: this.brightnessAverages,
           borderColor: '#FFC107',
           tension: 0.4,
         },
@@ -135,5 +190,39 @@ export class DashboardComponent implements AfterViewInit, OnInit {
       this.brightness = data.brightness;
       this.updateChart();
     });
+  }
+
+  fetchAverages() {
+    const startDate = format(this.weekDates[0].date, 'yyyy-MM-dd');
+    const endDate = format(this.weekDates[6].date, 'yyyy-MM-dd');
+
+    const averagesPromises = this.weekDates.map((day) => {
+      const date = format(day.date, 'yyyy-MM-dd');
+      return this.sensorService.getAverages(date).toPromise();
+    });
+
+    Promise.all(averagesPromises)
+      .then((results) => {
+        const humidityAverages: number[] = [];
+        const brightnessAverages: number[] = [];
+
+        results.forEach((data) => {
+          if (data && data.overallAverage) {
+            humidityAverages.push(data.overallAverage.humidity);
+            brightnessAverages.push(data.overallAverage.brightness);
+          } else {
+            humidityAverages.push(0);
+            brightnessAverages.push(0);
+          }
+        });
+
+        this.averageStoreService.setAverages(
+          humidityAverages,
+          brightnessAverages
+        );
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la récupération des moyennes :', error);
+      });
   }
 }
