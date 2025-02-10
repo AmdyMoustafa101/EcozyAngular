@@ -7,7 +7,6 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root',
 })
 export class SensorService {
-  private apiUrl = 'http://localhost:3002/api';
   private apiUrl = 'http://localhost:3002/api/sensor-data';
   private averagesUrl = 'http://localhost:3002/api/averages';
   private socket: Socket;

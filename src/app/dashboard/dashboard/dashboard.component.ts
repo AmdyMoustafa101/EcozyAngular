@@ -226,4 +226,19 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
         console.error('Erreur lors de la récupération des moyennes :', error);
       });
   }
+
+  toggleState(): void {
+    // Alterner l'état
+    this.currentState = this.currentState === 'OFF' ? 'ON' : 'OFF';
+
+    // Envoyer la commande à l'API
+    this.sensorService.arroser({ command: this.currentState }).subscribe({
+      next: (response) => {
+        console.log('Réponse de l’API :', response);
+      },
+      error: (error) => {
+        console.error('Erreur lors de l’envoi à l’API :', error);
+      },
+    });
+  }
 }
