@@ -6,11 +6,16 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class SensorService {
-  private apiUrl = 'http://localhost:3002/api/sensor-data';
+  private apiUrl = 'http://localhost:3002/api';
 
   constructor(private http: HttpClient) {}
 
   getSensorData(): Observable<{ humidity: number; brightness: number }> {
-    return this.http.get<{ humidity: number; brightness: number }>(this.apiUrl);
+    return this.http.get<{ humidity: number; brightness: number }>(`${this.apiUrl}/sensor-data`);
+  }
+
+  arroser(command: any): Observable<any> {
+    console.log('command: ', command);
+    return this.http.post<any>(`${this.apiUrl}/control-pump`, { command });
   }
 }

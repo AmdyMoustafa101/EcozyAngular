@@ -2,7 +2,8 @@
   <div class="header">
     <h1>Dashboard</h1>
     <div class="actions">
-      <button class="btn-primary">Arroser Maintenant</button>
+      <button *ngIf="currentState == 'OFF'" class="btn-primary" (click)="toggleState()">Arroser Maintenant</button>
+      <button *ngIf="currentState == 'ON'" class="btn btn-danger" (click)="toggleState()">Arrêter Arrosage</button>
       <button class="btn-secondary" *ngIf="!programmeEnCours" (click)="openArrosageModal()">
         Programmer un arrosage
       </button>

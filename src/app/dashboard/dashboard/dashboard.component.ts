@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild, NgModule } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { addWeeks, startOfWeek, format, eachDayOfInterval } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -18,6 +18,9 @@ Chart.register(...registerables);
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements AfterViewInit, OnInit {
+
+
+  currentState: 'ON' | 'OFF' = 'OFF';
   chart: any;
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
@@ -135,5 +138,22 @@ export class DashboardComponent implements AfterViewInit, OnInit {
       this.brightness = data.brightness;
       this.updateChart();
     });
+  }
+
+
+  toggleState(): void {
+    // Alterner l'état
+    this.currentState = (this.currentState === 'OFF') ? 'ON' : 'OFF';
+
+    // Envoyer la commande à l'API
+    this.sensorService.arroser({ command: this.currentState })
+      .subscribe({
+        next: (response) => {
+          console.log('Réponse de l’API :', response);
+        },
+        error: (error) => {
+          console.error('Erreur lors de l’envoi à l’API :', error);
+        }
+      });
   }
 }

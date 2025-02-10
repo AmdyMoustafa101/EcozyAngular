@@ -74,4 +74,8 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  btn-danger {
+    background-color: #f44336;
+  }
 }
