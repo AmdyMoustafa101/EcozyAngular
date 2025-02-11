@@ -17,7 +17,7 @@ export class SensorService {
   }>();
 
   constructor(private http: HttpClient) {
-    this.socket = io('http://localhost:3002');
+    this.socket = io('http://127.0.0.1:3002/api');
 
     /*this.socket.on(
       'sensor-data',
