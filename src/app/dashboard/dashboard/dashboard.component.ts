@@ -2,8 +2,8 @@ import {
   Component,
   AfterViewInit,
   OnInit,
-  ViewChild,
   OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { addWeeks, startOfWeek, format, eachDayOfInterval } from 'date-fns';
@@ -16,6 +16,7 @@ import { ProgrammeArrosageService } from '../../services/programme-arrosage.serv
 import { SensorService } from '../../services/sensor.service';
 import { AverageStoreService } from '../../services/average-store.service';
 import { Subscription } from 'rxjs';
+import { LoggingService } from '../../services/logging.service';
 
 Chart.register(...registerables);
 
@@ -36,12 +37,21 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   currentDate: Date = new Date();
   weekDates: { date: Date; dayName: string }[] = [];
   isArrosageModalOpen = false;
-
+  overallAverages: number[] = [];
   programmeEnCours: any = null;
   showProgrammeDetails: boolean = false;
 
+  userConnect: {
+    id: string;
+    role: string;
+    nom: string;
+    prenom: string;
+    photo: string;
+  } | null = null;
+
   humidity = 0;
   brightness = 0;
+  waterlevel = 0;
 
   humidityAverages: number[] = [];
   brightnessAverages: number[] = [];
@@ -52,7 +62,8 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   constructor(
     private programmeArrosageService: ProgrammeArrosageService,
     private sensorService: SensorService,
-    private averageStoreService: AverageStoreService
+    private averageStoreService: AverageStoreService,
+    private LoggingService: LoggingService
   ) {
     this.updateWeekDates();
   }
@@ -62,26 +73,27 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   programmeDetailsModal!: ProgrammeDetailsComponent;
 
   ngOnInit() {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.userConnect = JSON.parse(userData);
+    }
+
     this.checkProgrammeEnCours();
     this.fetchSensorData();
 
     this.averagesSubscription =
-      this.averageStoreService.humidityAverages$.subscribe((averages) => {
-        this.humidityAverages = averages;
-        this.updateChart();
+      this.averageStoreService.overallAverages$.subscribe((averages) => {
+        this.overallAverages = averages;
+        this.updateChartData();
       });
-
-    this.averageStoreService.brightnessAverages$.subscribe((averages) => {
-      this.brightnessAverages = averages;
-      this.updateChart();
-    });
 
     this.sensorDataSubscription = this.sensorService
       .onSensorData()
       .subscribe((data) => {
         this.humidity = data.humidity;
         this.brightness = data.brightness;
-        this.updateChart();
+        this.waterlevel = data.waterlevel;
+        this.updateChartData();
       });
 
     this.fetchAverages();
@@ -143,24 +155,33 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
     this.currentDate = addWeeks(this.currentDate, weeks);
     this.updateWeekDates();
     this.fetchAverages();
-    this.updateChart();
+    this.updateChartData();
   }
 
   createChart() {
-    this.chart = new Chart('chart', {
-      type: 'line',
-      data: this.getChartData(),
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: { y: { min: 0, max: 100 } },
-      },
-    });
+    const ctx = (
+      document.getElementById('chart') as HTMLCanvasElement
+    ).getContext('2d');
+    if (ctx) {
+      this.chart = new Chart(ctx, {
+        type: 'line',
+        data: this.getChartData(),
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { min: 0, max: 100 } },
+        },
+      });
+    } else {
+      console.error('Failed to get 2D context');
+    }
   }
 
-  updateChart() {
+  updateChartData() {
     if (this.chart) {
-      this.chart.data = this.getChartData();
+      this.chart.data.datasets[0].data = this.humidityAverages;
+      this.chart.data.datasets[1].data = this.brightnessAverages;
+
       this.chart.update();
     }
   }
@@ -189,17 +210,18 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
     this.sensorService.getSensorData().subscribe((data) => {
       this.humidity = data.humidity;
       this.brightness = data.brightness;
-      this.updateChart();
+      this.waterlevel = data.waterlevel;
+      this.updateChartData();
     });
   }
 
   fetchAverages() {
-    const startDate = format(this.weekDates[0].date, 'yyyy-MM-dd');
-    const endDate = format(this.weekDates[6].date, 'yyyy-MM-dd');
-
     const averagesPromises = this.weekDates.map((day) => {
       const date = format(day.date, 'yyyy-MM-dd');
-      return this.sensorService.getAverages(date).toPromise();
+      return this.sensorService
+        .getAverages(date)
+        .toPromise()
+        .catch(() => null); // Retourne null en cas d'erreur
     });
 
     Promise.all(averagesPromises)
@@ -208,7 +230,11 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
         const brightnessAverages: number[] = [];
 
         results.forEach((data) => {
-          if (data && data.overallAverage) {
+          if (
+            data &&
+            data.overallAverage &&
+            typeof data.overallAverage === 'object'
+          ) {
             humidityAverages.push(data.overallAverage.humidity);
             brightnessAverages.push(data.overallAverage.brightness);
           } else {
@@ -217,10 +243,9 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
           }
         });
 
-        this.averageStoreService.setAverages(
-          humidityAverages,
-          brightnessAverages
-        );
+        this.humidityAverages = humidityAverages;
+        this.brightnessAverages = brightnessAverages;
+        this.updateChartData();
       })
       .catch((error) => {
         console.error('Erreur lors de la récupération des moyennes :', error);
@@ -228,12 +253,18 @@ export class DashboardComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   toggleState(): void {
-    // Alterner l'état
     this.currentState = this.currentState === 'OFF' ? 'ON' : 'OFF';
-
-    // Envoyer la commande à l'API
     this.sensorService.arroser({ command: this.currentState }).subscribe({
       next: (response) => {
+        if (this.userConnect !== null) {
+          this.LoggingService.logAction(
+            this.userConnect.id,
+            'arroser',
+            'pompe',
+            'null',
+            this.currentState
+          );
+        }
         console.log('Réponse de l’API :', response);
       },
       error: (error) => {

@@ -7,10 +7,10 @@
     <img
       class="profile-picture"
       alt="User profile picture"
-      [src]="'http://localhost:3500/' + user.photo" (click)="openUserDetailsModal()"
+      [src]="'http://localhost:3500/' + user.photo"
+      (click)="openUserDetailsModal()"
     />
     <p class="username">{{ user.nom }} {{ user.prenom }}</p>
-
   </div>
 
   <!-- Menu -->
@@ -39,5 +39,6 @@
 <app-user-details-modal
   #userDetailsModal
   [user]="user"
-  (closeModal)="closeUserDetailsModal()">
+  (closeModal)="closeUserDetailsModal()"
+>
 </app-user-details-modal>

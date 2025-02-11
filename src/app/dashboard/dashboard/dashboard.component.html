@@ -2,12 +2,32 @@
   <div class="header">
     <h1>Dashboard</h1>
     <div class="actions">
-      <button *ngIf="currentState == 'OFF'" class="btn-primary" (click)="toggleState()">Arroser Maintenant</button>
-      <button *ngIf="currentState == 'ON'" class="btn btn-danger" (click)="toggleState()">Arrêter Arrosage</button>
-      <button class="btn-secondary" *ngIf="!programmeEnCours" (click)="openArrosageModal()">
+      <button
+        *ngIf="currentState == 'OFF'"
+        class="btn-primary"
+        (click)="toggleState()"
+      >
+        Arroser Maintenant
+      </button>
+      <button
+        *ngIf="currentState == 'ON'"
+        class="btn btn-danger"
+        (click)="toggleState()"
+      >
+        Arrêter Arrosage
+      </button>
+      <button
+        class="btn-secondary"
+        *ngIf="!programmeEnCours"
+        (click)="openArrosageModal()"
+      >
         Programmer un arrosage
       </button>
-      <button class="btn-secondary" *ngIf="programmeEnCours" (click)="openProgrammeDetails()">
+      <button
+        class="btn-secondary"
+        *ngIf="programmeEnCours"
+        (click)="openProgrammeDetails()"
+      >
         Voir programme en cours
       </button>
     </div>
@@ -15,9 +35,7 @@
 
   <!-- Autres éléments du dashboard -->
 
-    <app-programme-details
-    #programmeDetailsModal
-    [programme]="programmeEnCours">
+  <app-programme-details #programmeDetailsModal [programme]="programmeEnCours">
   </app-programme-details>
 
   <app-arrosage-modal
@@ -37,7 +55,7 @@
       color="#FFC107"
     ></app-circular-gauge>
     <app-circular-gauge
-      [value]="20"
+      [value]="waterlevel"
       title="Niveau d'eau"
       color="#2196F3"
     ></app-circular-gauge>

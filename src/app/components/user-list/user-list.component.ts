@@ -32,7 +32,7 @@ export class UserListComponent implements OnInit {
   users: any[] = [];
   filteredUsers: any[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 7;
   searchQuery: string = '';
   archiveFilter: string = 'all';
   selectedUsers: Set<string> = new Set();
@@ -50,7 +50,7 @@ export class UserListComponent implements OnInit {
     prenom: string;
   } | null = null;
 
-  userConnect:  {
+  userConnect: {
     id: string;
     role: string;
     nom: string;
@@ -62,7 +62,11 @@ export class UserListComponent implements OnInit {
   @ViewChild('editUserModal') editUserModal!: EditUserComponent;
   @ViewChild('assignationModal') assignationModal!: AssignationComponent;
 
-  constructor(private userService: UserService, private fb: FormBuilder, private loggingService: LoggingService) {}
+  constructor(
+    private userService: UserService,
+    private fb: FormBuilder,
+    private loggingService: LoggingService
+  ) {}
 
   ngOnInit(): void {
     const userData = localStorage.getItem('user');
@@ -103,8 +107,9 @@ export class UserListComponent implements OnInit {
   loadUsers(): void {
     this.userService.getUsers().subscribe({
       next: (data) => {
-        this.users = data;
-        this.filteredUsers = data;
+        // Filtrer les utilisateurs pour exclure l'utilisateur connecté
+        this.users = data.filter((user) => user._id !== this.userConnect?.id);
+        this.filteredUsers = this.users;
         this.totalUsers = this.users.length;
         this.activeUsers = this.users.filter((user) => !user.archived).length;
         this.usersWithRFID = this.users.filter(
@@ -197,6 +202,15 @@ export class UserListComponent implements OnInit {
   archiveUser(userId: string): void {
     const user = this.users.find((u) => u._id === userId);
     if (!user) return;
+    if (user._id === this.userConnect?.id) {
+      Swal.fire({
+        title: 'Erreur !',
+        text: 'Vous ne pouvez pas archiver votre propre compte.',
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+      });
+      return;
+    }
 
     const action = user.archived ? 'désarchiver' : 'archiver';
     const actionText = user.archived
@@ -220,9 +234,14 @@ export class UserListComponent implements OnInit {
 
         archiveObservable.subscribe({
           next: () => {
-
-            if(this.userConnect != null ){
-              this.loggingService.logAction(this.userConnect.id, 'archive', 'user', userId, `Utilisateur ${action}`);
+            if (this.userConnect != null) {
+              this.loggingService.logAction(
+                this.userConnect.id,
+                action,
+                'user',
+                userId,
+                `Utilisateur ${action}`
+              );
             }
 
             user.archived = !user.archived;
@@ -273,10 +292,16 @@ export class UserListComponent implements OnInit {
               return user;
             });
 
-            if(this.userConnect != null ){
+            if (this.userConnect != null) {
               this.selectedUsers.forEach((userId) => {
                 if (this.userConnect?.id) {
-                  this.loggingService.logAction(this.userConnect.id, 'archive', 'user', userId, 'Utilisateur archivé');
+                  this.loggingService.logAction(
+                    this.userConnect.id,
+                    'archive',
+                    'user',
+                    userId,
+                    'Utilisateur archivé'
+                  );
                 }
               });
             }
@@ -317,6 +342,16 @@ export class UserListComponent implements OnInit {
       if (result.isConfirmed) {
         this.userService.removeCardFromUser(user._id).subscribe({
           next: () => {
+            if (this.userConnect != null) {
+              this.loggingService.logAction(
+                this.userConnect.id,
+                'désassignation',
+                'user',
+                user._id,
+                'Désassignation de la carte RFID'
+              );
+            }
+
             user.carteRFID = null;
             this.applyFilters();
             Swal.fire({

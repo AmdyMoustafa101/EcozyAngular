@@ -145,6 +145,7 @@
           </span>
           <ng-template #assignButton>
             <button
+              *ngIf="!user.archived"
               class="btn btn-sm btn-outline-primary"
               (click)="openAssignationModal(user)"
             >
@@ -163,6 +164,7 @@
         </td>
         <td class="table-cell">
           <button
+            *ngIf="!user.archived"
             class="edit-button"
             title="Modifier"
             (click)="openEditModal(user)"
@@ -170,8 +172,17 @@
             <i class="fas fa-edit"></i>
           </button>
           <button
+            *ngIf="!user.archived"
             class="delete-button"
             title="Archiver"
+            (click)="archiveUser(user._id)"
+          >
+            <i class="fas fa-archive"></i>
+          </button>
+          <button
+            *ngIf="user.archived"
+            class="restore-button"
+            title="Restaurer"
             (click)="archiveUser(user._id)"
           >
             <i class="fas fa-archive"></i>

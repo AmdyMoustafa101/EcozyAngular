@@ -17,7 +17,10 @@ export const routes: Routes = [
       { path: 'plantes', component: PlanteListComponent },
       { path: 'new-plante', component: CreatePlanteComponent },
       { path: 'historique', component: HistoriqueComponent },
-      { path: 'details/:userId/:entityId/:date', component: DetailActionsComponent },
+      {
+        path: 'details/:userId/:entityId/:date',
+        component: DetailActionsComponent,
+      },
     ],
   },
   {

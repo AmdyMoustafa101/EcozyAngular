@@ -165,7 +165,6 @@ export class AuthentificationComponent
     this.authService.loginWithRfid(this.rfidValue).subscribe({
       next: (response: any) => {
         if (response.message) {
-
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.user));
           this.router.navigate(['/dashboard']);
@@ -174,6 +173,7 @@ export class AuthentificationComponent
             title: 'Erreur!',
             text: 'Carte RFID Incorrecte',
             icon: 'error',
+            timer: 1000,
           });
         }
       },
@@ -183,6 +183,7 @@ export class AuthentificationComponent
           title: 'Erreur!',
           text: 'Carte RFID Incorrecte',
           icon: 'error',
+          timer: 1000,
         });
       },
     });

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
@@ -7,29 +7,48 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root',
 })
 export class SensorService {
-  private apiUrl = 'http://localhost:3002/api/sensor-data';
+  private apiUrl = 'http://localhost:3002/api';
   private averagesUrl = 'http://localhost:3002/api/averages';
   private socket: Socket;
   private sensorDataSubject = new Subject<{
     humidity: number;
     brightness: number;
+    waterlevel: number;
   }>();
 
   constructor(private http: HttpClient) {
-    this.socket = io('http://192.168.1.25:3002');
+    this.socket = io('http://localhost:3002');
 
-    this.socket.on(
+    /*this.socket.on(
       'sensor-data',
       (data: { humidity: number; brightness: number }) => {
         this.sensorDataSubject.next(data);
+        console.log('data: ', data);
       }
-    );
+    );*/
+    this.socket.on('sensor-data', (data) => {
+      try {
+        if (data && data.humidity !== undefined) {
+          // Traitement des données
+          this.sensorDataSubject.next(data);
+        }
+      } catch (error) {
+        console.error('Erreur de réception:', error);
+      }
+    });
   }
+  // Avec gestion d'erreurs
 
-  getSensorData(): Observable<{ humidity: number; brightness: number }> {
-    return this.http.get<{ humidity: number; brightness: number }>(
-      `${this.apiUrl}/sensor-data`
-    );
+  getSensorData(): Observable<{
+    humidity: number;
+    brightness: number;
+    waterlevel: number;
+  }> {
+    return this.http.get<{
+      humidity: number;
+      brightness: number;
+      waterlevel: number;
+    }>(`${this.apiUrl}/sensor-data`);
   }
 
   arroser(command: any): Observable<any> {
@@ -37,18 +56,23 @@ export class SensorService {
     return this.http.post<any>(`${this.apiUrl}/control-pump`, { command });
   }
 
-  onSensorData(): Observable<{ humidity: number; brightness: number }> {
+  onSensorData(): Observable<{
+    humidity: number;
+    brightness: number;
+    waterlevel: number;
+  }> {
     return this.sensorDataSubject.asObservable();
   }
 
-  getAverages(date: string): Observable<{
-    date: string;
-    overallAverage: { humidity: number; brightness: number };
-  }> {
-    const params = { date };
+  // Méthode pour récupérer les moyennes
+  getAverages(
+    date: string
+  ): Observable<{ overallAverage: { humidity: number; brightness: number } }> {
+    const params = new HttpParams().set('date', date);
     return this.http.get<{
-      date: string;
       overallAverage: { humidity: number; brightness: number };
-    }>(this.averagesUrl, { params });
+    }>(this.averagesUrl, {
+      params,
+    });
   }
 }

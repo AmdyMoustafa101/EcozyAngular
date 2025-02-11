@@ -15,9 +15,9 @@
         <div class="stat-icon">
           <i class="fas fa-bolt"></i>
         </div>
-        <div class="stat-value">{{ creation }}</div>
+        <div class="stat-value">{{ activeUsers }}</div>
       </div>
-      <div class="stat-label">Creations </div>
+      <div class="stat-label">Actives</div>
     </div>
     <div class="divider"></div>
     <div class="stat">
@@ -25,9 +25,9 @@
         <div class="stat-icon">
           <i class="fas fa-calendar-alt"></i>
         </div>
-        <div class="stat-value">{{ suppression }}</div>
+        <div class="stat-value">{{ archiveUsers }}</div>
       </div>
-      <div class="stat-label">Suppressions</div>
+      <div class="stat-label">Archivés</div>
     </div>
   </div>
 
@@ -63,18 +63,32 @@
           <th class="table-cell">Actions</th>
         </tr>
       </thead>
+      <!-- Corps du tableau -->
       <tbody>
         <ng-container *ngFor="let log of filteredLogs">
           <tr class="table-row">
             <td></td>
             <td class="table-cell">
-              <img [src]="'http://localhost:3500/' + getUserDetails(log.userId)?.photo" alt="Photo de l'utilisateur" width="50" class="rounded-circle">
+              <img
+                [src]="
+                  'http://localhost:3500/' + getUserDetails(log.userId)?.photo
+                "
+                alt="Photo de l'utilisateur"
+                width="50"
+                class="rounded-circle"
+              />
             </td>
             <td class="table-cell">{{ getUserDetails(log.userId)?.prenom }}</td>
             <td class="table-cell">{{ getUserDetails(log.userId)?.nom }}</td>
-            <td class="table-cell">{{ getUserDetails(log.userId)?.telephone }}</td>
-            <td class="table-cell">{{ log.loginTime | date : "dd MMMM yyyy, HH:mm:ss" }}</td>
-            <td class="table-cell">{{ log.logoutTime | date : "dd MMMM yyyy, HH:mm:ss" }}</td>
+            <td class="table-cell">
+              {{ getUserDetails(log.userId)?.telephone }}
+            </td>
+            <td class="table-cell">
+              {{ log.loginTime | date : "dd MMMM yyyy, HH:mm:ss" }}
+            </td>
+            <td class="table-cell">
+              {{ log.logoutTime | date : "dd MMMM yyyy, HH:mm:ss" }}
+            </td>
             <td class="table-cell">
               <button class="edit-button" (click)="navigateToDetails(log)">
                 Détails
@@ -84,5 +98,22 @@
         </ng-container>
       </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+      >
+        Précédent
+      </button>
+      <span>Page {{ currentPage }} sur {{ totalPages() }}</span>
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages()"
+      >
+        Suivant
+      </button>
+    </div>
   </div>
 </div>

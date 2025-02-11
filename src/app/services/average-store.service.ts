@@ -5,14 +5,10 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AverageStoreService {
-  private humidityAverages = new BehaviorSubject<number[]>([]);
-  private brightnessAverages = new BehaviorSubject<number[]>([]);
+  private overallAveragesSubject = new BehaviorSubject<number[]>([]);
+  overallAverages$ = this.overallAveragesSubject.asObservable();
 
-  humidityAverages$ = this.humidityAverages.asObservable();
-  brightnessAverages$ = this.brightnessAverages.asObservable();
-
-  setAverages(humidityAverages: number[], brightnessAverages: number[]) {
-    this.humidityAverages.next(humidityAverages);
-    this.brightnessAverages.next(brightnessAverages);
+  setOverallAverages(averages: number[]) {
+    this.overallAveragesSubject.next(averages);
   }
 }

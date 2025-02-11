@@ -1,3 +1,4 @@
+/* Base styles for the sidebar */
 .sidebar {
   width: 250px;
   background-color: #a8e6cf;
@@ -6,32 +7,33 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
+  transition: width 0.3s; /* Smooth transition for width changes */
 }
 
 /* Logo Ecozy */
 .logo {
-  width: 80%; /* Ajustez la largeur selon votre logo */
+  width: 80%; /* Adjust the width according to your logo */
   margin-bottom: 20px;
   width: 100px;
   border-radius: 5px;
 }
 
-/* Conteneur pour la photo de profil et le nom */
+/* Container for the profile picture and name */
 .user-info {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Photo de profil */
+/* Profile picture */
 .profile-picture {
   border-radius: 50%;
   width: 100px;
   height: 100px;
-  object-fit: cover; /* Pour s'assurer que l'image couvre bien le cercle */
+  object-fit: cover; /* Ensure the image covers the circle */
   margin-bottom: 10px;
 }
 
-/* Nom de l'utilisateur */
+/* Username */
 .username {
   font-size: 16px;
   font-weight: 500;
@@ -39,7 +41,7 @@
   margin: 0;
 }
 
-/* Menu (inchangé) */
+/* Menu */
 .menu {
   width: 100%;
 }
@@ -65,7 +67,7 @@
   color: white;
 }
 
-/* Bouton de déconnexion (inchangé) */
+/* Logout button */
 .logout {
   background-color: #f44336;
   color: white !important;
@@ -73,5 +75,32 @@
   padding: 12px;
   text-align: center;
   border-radius: 8px;
-  margin-top: auto; /* Pour le coller en bas */
+  margin-top: auto; /* Stick to the bottom */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%; /* Full width on smaller screens */
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+
+  .logo,
+  .profile-picture {
+    width: 70px; /* Smaller logo and profile picture */
+    height: 70px;
+  }
+
+  .username {
+    font-size: 14px; /* Smaller font size for username */
+  }
+
+  .menu a {
+    padding: 10px; /* Less padding for menu items */
+    font-size: 14px; /* Smaller font size for menu items */
+  }
+
+  .logout {
+    padding: 10px; /* Less padding for logout button */
+  }
 }
