@@ -7,7 +7,7 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root',
 })
 export class SensorService {
-  private apiUrl = 'http://localhost:3002/api/sensor-data';
+  private apiUrl = 'http://localhost:3002/api';
   private averagesUrl = 'http://localhost:3002/api/averages';
   private socket: Socket;
   private sensorDataSubject = new Subject<{
@@ -16,12 +16,13 @@ export class SensorService {
   }>();
 
   constructor(private http: HttpClient) {
-    this.socket = io('http://192.168.1.25:3002');
+    this.socket = io('http://127.0.0.1:3002/api');
 
     this.socket.on(
       'sensor-data',
       (data: { humidity: number; brightness: number }) => {
         this.sensorDataSubject.next(data);
+        console.log('data: ', data);
       }
     );
   }
