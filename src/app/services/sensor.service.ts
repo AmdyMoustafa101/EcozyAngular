@@ -17,16 +17,16 @@ export class SensorService {
   }>();
 
   constructor(private http: HttpClient) {
-    this.socket = io('http://127.0.0.1:3002/api');
+    this.socket = io('http://127.0.0.1:3002/');
 
-    /*this.socket.on(
+    this.socket.on(
       'sensor-data',
-      (data: { humidity: number; brightness: number }) => {
+      (data: { humidity: number; brightness: number; waterlevel: number }) => {
         this.sensorDataSubject.next(data);
         console.log('data: ', data);
       }
-    );*/
-    this.socket.on('sensor-data', (data) => {
+    );
+    /*     this.socket.on('sensor-data', (data) => {
       try {
         if (data && data.humidity !== undefined) {
           // Traitement des données
@@ -35,7 +35,7 @@ export class SensorService {
       } catch (error) {
         console.error('Erreur de réception:', error);
       }
-    });
+    }); */
   }
   // Avec gestion d'erreurs
 
